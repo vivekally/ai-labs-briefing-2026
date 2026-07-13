@@ -1,0 +1,1320 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta charset="utf-8">
+<title>The State of the Labs — July 2026</title>
+<style>
+  :root {
+    --bg: #f3f5f2;
+    --surface: #fcfdfb;
+    --ink: #171d1a;
+    --ink-2: #4e5651;
+    --muted: #7c8480;
+    --line: #dfe3dd;
+    --accent: #0e6b52;
+    --c-scale: #2a78d6;
+    --c-hedge: #1baf7a;
+    --c-comm: #b87f00;
+    --c-comm-dot: #eda100;
+    --c-diss: #008300;
+    --wash: #e9ede8;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0e1210;
+      --surface: #181d1a;
+      --ink: #f2f4f0;
+      --ink-2: #b9c1b8;
+      --muted: #8b938a;
+      --line: #2a302b;
+      --accent: #58b899;
+      --c-scale: #3987e5;
+      --c-hedge: #199e70;
+      --c-comm: #c98500;
+      --c-comm-dot: #c98500;
+      --c-diss: #21a021;
+      --wash: #1e2420;
+    }
+  }
+  :root[data-theme="light"] {
+    --bg: #f3f5f2; --surface: #fcfdfb; --ink: #171d1a; --ink-2: #4e5651;
+    --muted: #7c8480; --line: #dfe3dd; --accent: #0e6b52;
+    --c-scale: #2a78d6; --c-hedge: #1baf7a; --c-comm: #b87f00; --c-comm-dot: #eda100;
+    --c-diss: #008300; --wash: #e9ede8;
+  }
+  :root[data-theme="dark"] {
+    --bg: #0e1210; --surface: #181d1a; --ink: #f2f4f0; --ink-2: #b9c1b8;
+    --muted: #8b938a; --line: #2a302b; --accent: #58b899;
+    --c-scale: #3987e5; --c-hedge: #199e70; --c-comm: #c98500; --c-comm-dot: #c98500;
+    --c-diss: #21a021; --wash: #1e2420;
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    * { transition: none !important; animation: none !important; }
+  }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "Charter", "Bitstream Charter", "Sitka Text", Cambria, Georgia, serif;
+    font-size: 17px;
+    line-height: 1.65;
+  }
+  .sans { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
+  .mono, .eyebrow, .chip, .meta, .dotlabel, .pole, .ticker, .stat,
+  .bar-val, .seg-label, .fig-note, .tl-month, .legend-mini {
+    font-family: ui-monospace, "SF Mono", "Cascadia Code", Menlo, Consolas, monospace;
+  }
+  a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: 2.5px; }
+  a:focus-visible, .dot:focus-visible, .seg:focus-visible, button:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+
+  .shell { max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+  .prose { max-width: 74ch; }
+
+  /* ---------- Masthead ---------- */
+  .masthead { background: var(--surface); border-bottom: 1px solid var(--line); padding: 48px 0 0; }
+  .mast-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; }
+  .eyebrow {
+    font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--ink-2); margin: 0 0 20px;
+  }
+  .themebtn {
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    font-size: 12px; letter-spacing: 0.06em;
+    color: var(--ink-2); background: var(--bg);
+    border: 1px solid var(--line); border-radius: 999px;
+    padding: 6px 14px; cursor: pointer; white-space: nowrap;
+    display: inline-flex; align-items: center; gap: 7px;
+  }
+  .themebtn:hover { color: var(--ink); border-color: var(--muted); }
+  .themebtn .glyph { font-size: 13px; line-height: 1; }
+  h1 {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    font-weight: 800; letter-spacing: -0.022em; line-height: 1.04;
+    font-size: clamp(38px, 6vw, 64px);
+    margin: 0 0 22px; max-width: 20ch; text-wrap: balance;
+  }
+  .dek {
+    font-size: 20px; line-height: 1.55; color: var(--ink-2);
+    max-width: 62ch; margin: 0 0 34px;
+  }
+  .ticker {
+    display: flex; flex-wrap: wrap; gap: 10px 34px;
+    font-size: 12.5px; color: var(--ink-2); letter-spacing: 0.02em;
+    padding: 18px 0 26px; border-top: 1px solid var(--line);
+    font-variant-numeric: tabular-nums;
+  }
+  .ticker b { color: var(--ink); font-weight: 600; }
+  .campband { display: flex; height: 5px; }
+  .campband span { flex: 1; }
+
+  /* ---------- Tab bar ---------- */
+  .tabs {
+    position: sticky; top: 0; z-index: 20;
+    background: var(--surface); border-bottom: 1px solid var(--line);
+  }
+  .tabs-in { display: flex; flex-wrap: wrap; gap: 0 4px; overflow-x: auto; }
+  .tabs a {
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    font-size: 12px; letter-spacing: 0.05em; text-transform: uppercase;
+    text-decoration: none; color: var(--ink-2);
+    padding: 13px 12px 11px; border-bottom: 2px solid transparent;
+    white-space: nowrap;
+  }
+  .tabs a:hover { color: var(--accent); }
+  .tabs a[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--accent); font-weight: 700; }
+
+  /* ---------- Legend / camps ---------- */
+  .legend { display: flex; flex-wrap: wrap; gap: 10px 26px; padding: 16px 0 4px; font-size: 12.5px; }
+  .chip { display: inline-flex; align-items: center; gap: 8px; color: var(--ink-2); letter-spacing: 0.02em; }
+  .swatch { width: 11px; height: 11px; border-radius: 50%; flex: none; box-shadow: 0 0 0 1.5px var(--surface); }
+  .sw-scale { background: var(--c-scale); }
+  .sw-hedge { background: var(--c-hedge); }
+  .sw-comm  { background: var(--c-comm-dot); }
+  .sw-diss  { background: var(--c-diss); }
+
+  /* ---------- Sections (tab panels) ---------- */
+  section { padding: 44px 0 8px; }
+  body.tabbed main > section { display: none; }
+  body.tabbed main > section.active { display: block; }
+  @media print { body.tabbed main > section { display: block !important; } .tabs, .themebtn { display: none !important; } }
+  .sec-eyebrow { font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); margin: 0 0 10px;
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; }
+  h2 {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    font-weight: 800; letter-spacing: -0.018em; font-size: clamp(26px, 3.4vw, 36px);
+    line-height: 1.12; margin: 0 0 18px; text-wrap: balance;
+  }
+  h3 {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    font-weight: 700; letter-spacing: -0.01em; font-size: 19px; margin: 34px 0 10px; text-wrap: balance;
+  }
+  p { margin: 0 0 16px; }
+  .lead { font-size: 18.5px; }
+
+  /* ---------- Figures (charts) ---------- */
+  .fig {
+    background: var(--surface); border: 1px solid var(--line); border-radius: 6px;
+    padding: 20px 22px 16px; margin: 24px 0;
+  }
+  .fig-title {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    font-weight: 700; font-size: 15.5px; margin: 0 0 2px;
+  }
+  .fig-sub { font-size: 13px; color: var(--muted); margin: 0 0 16px; }
+  .fig-note { font-size: 11.5px; color: var(--muted); margin: 12px 0 0; letter-spacing: 0.01em; }
+  .legend-mini { display: flex; flex-wrap: wrap; gap: 6px 20px; font-size: 11.5px; color: var(--ink-2); margin: 0 0 14px; }
+  .legend-mini .chip { gap: 6px; }
+  .legend-mini .swatch { width: 9px; height: 9px; }
+
+  /* horizontal bars */
+  .bars { display: grid; gap: 10px; }
+  .bar-row { display: grid; grid-template-columns: 168px 1fr; gap: 12px; align-items: center; }
+  .bar-label { font-size: 13px; color: var(--ink); line-height: 1.3;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
+  .bar-label .sub { display: block; font-size: 10.5px; color: var(--muted);
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; letter-spacing: 0.02em; }
+  .bar-track { display: flex; align-items: center; gap: 8px; min-width: 0; }
+  .bar-fill { height: 18px; border-radius: 0 4px 4px 0; flex: none; min-width: 3px; }
+  .bar-fill.ghost { opacity: 0.45; }
+  .bar-fill.hatch {
+    background-image: repeating-linear-gradient(135deg, transparent 0 4px, var(--surface) 4px 6px);
+  }
+  .bar-val { font-size: 12px; color: var(--ink-2); white-space: nowrap; font-variant-numeric: tabular-nums; }
+  @media (max-width: 560px) { .bar-row { grid-template-columns: 118px 1fr; } }
+
+  /* stacked 100% bars */
+  .stack { display: grid; grid-template-columns: 92px 1fr; gap: 12px; align-items: center; margin-bottom: 12px; }
+  .stack-label { font-size: 12.5px; color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; font-weight: 600; }
+  .stack-bar { display: flex; gap: 2px; height: 26px; border-radius: 4px; overflow: hidden; }
+  .seg { position: relative; display: flex; align-items: center; justify-content: center; min-width: 2px; cursor: default; }
+  .seg-label { font-size: 11px; color: #fff; white-space: nowrap; overflow: hidden; }
+  .seg[data-full]::after {
+    content: attr(data-full);
+    position: absolute; left: 50%; transform: translateX(-50%);
+    background: var(--ink); color: var(--bg);
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    font-size: 11px; padding: 4px 8px; border-radius: 4px; white-space: nowrap;
+    opacity: 0; pointer-events: none; transition: opacity 0.12s ease;
+    bottom: calc(100% + 6px); z-index: 3;
+  }
+  .seg[data-full]:hover::after, .seg[data-full]:focus-visible::after { opacity: 1; }
+
+  /* timeline */
+  .tl-scroll { overflow-x: auto; padding-bottom: 6px; }
+  .tl { display: grid; grid-template-columns: repeat(8, minmax(148px, 1fr)); gap: 0; min-width: 1190px;
+    border-top: 2px solid var(--line); }
+  .tl-col { padding: 0 10px 4px 0; border-left: 1px solid var(--line); padding-left: 10px; position: relative; }
+  .tl-col::before { content: ""; position: absolute; top: -5px; left: -4px; width: 7px; height: 7px;
+    border-radius: 50%; background: var(--muted); }
+  .tl-month { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted);
+    margin: 10px 0 10px; }
+  .tl-ev { border-left: 3px solid var(--line); padding: 2px 0 2px 8px; margin-bottom: 10px; }
+  .tl-ev p { font-size: 12.5px; line-height: 1.45; color: var(--ink-2); margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
+  .tl-ev b { color: var(--ink); font-weight: 650; }
+  .ev-scale { border-left-color: var(--c-scale); }
+  .ev-hedge { border-left-color: var(--c-hedge); }
+  .ev-comm  { border-left-color: var(--c-comm-dot); }
+  .ev-diss  { border-left-color: var(--c-diss); }
+
+  /* ---------- Findings ---------- */
+  .findings { display: grid; gap: 0; margin: 26px 0 10px; border-top: 1px solid var(--line); }
+  .finding { display: grid; grid-template-columns: 56px 1fr; gap: 18px; padding: 20px 0; border-bottom: 1px solid var(--line); }
+  .finding .n {
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    font-size: 13px; color: var(--muted); padding-top: 5px; font-variant-numeric: tabular-nums;
+  }
+  .finding h4 {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    font-weight: 700; font-size: 16.5px; margin: 0 0 6px; letter-spacing: -0.005em;
+  }
+  .finding p { margin: 0; font-size: 15.5px; color: var(--ink-2); max-width: 78ch; }
+
+  /* ---------- Atlas ---------- */
+  .region { margin: 40px 0 8px; }
+  .region-h { display: flex; align-items: baseline; gap: 14px; border-bottom: 2px solid var(--ink); padding-bottom: 8px; margin-bottom: 18px; }
+  .region-h h3 { margin: 0; font-size: 21px; }
+  .region-h .meta { font-size: 12px; color: var(--muted); letter-spacing: 0.06em; text-transform: uppercase; }
+  .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(330px, 1fr)); gap: 14px; }
+  .card {
+    background: var(--surface); border: 1px solid var(--line); border-radius: 6px;
+    padding: 18px 18px 16px; display: flex; flex-direction: column; gap: 8px;
+  }
+  .card-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  .card-top .name {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    font-weight: 700; font-size: 17px; letter-spacing: -0.005em;
+  }
+  .meta { font-size: 11.5px; color: var(--muted); letter-spacing: 0.03em; font-variant-numeric: tabular-nums; }
+  .card p { font-size: 14.5px; line-height: 1.58; color: var(--ink-2); margin: 0; }
+  .card .flag { font-size: 13px; color: var(--ink); margin: 0; }
+  .card .flag b { font-weight: 600; }
+
+  /* ---------- Fault lines / strips ---------- */
+  .strip-block { background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 22px 22px 14px; margin: 26px 0; }
+  .strip-q {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    font-weight: 700; font-size: 17px; margin: 0 0 4px;
+  }
+  .strip-scroll { overflow-x: auto; }
+  .strip { position: relative; min-width: 640px; height: 132px; margin: 8px 0 2px; }
+  .strip .axis {
+    position: absolute; left: 0; right: 0; top: 50%; height: 0;
+    border-top: 1px solid var(--line);
+  }
+  .strip .axis::before, .strip .axis::after {
+    content: ""; position: absolute; top: -3.5px; width: 7px; height: 7px; border-radius: 50%;
+    background: var(--wash); border: 1px solid var(--line);
+  }
+  .strip .axis::before { left: 0; } .strip .axis::after { right: 0; }
+  .pole {
+    position: absolute; font-size: 10.5px; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--muted); top: 2px;
+  }
+  .pole.l { left: 0; } .pole.r { right: 0; text-align: right; }
+  .dot {
+    position: absolute; top: 50%; width: 12px; height: 12px; border-radius: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 0 0 0 2px var(--surface);
+    cursor: default;
+  }
+  .dot::after {
+    content: attr(data-full);
+    position: absolute; left: 50%; transform: translateX(-50%);
+    background: var(--ink); color: var(--bg);
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    font-size: 11px; padding: 4px 8px; border-radius: 4px; white-space: nowrap;
+    opacity: 0; pointer-events: none; transition: opacity 0.12s ease;
+    bottom: calc(100% + 8px); z-index: 3;
+  }
+  .dot:hover::after, .dot:focus-visible::after { opacity: 1; }
+  .dot:hover, .dot:focus-visible { z-index: 2; }
+  .dotlabel {
+    position: absolute; transform: translateX(-50%);
+    font-size: 10.5px; color: var(--ink-2); white-space: nowrap; letter-spacing: 0.01em;
+  }
+  .dotlabel.up { bottom: calc(50% + 14px); }
+  .dotlabel.down { top: calc(50% + 14px); }
+  .d-scale { background: var(--c-scale); }
+  .d-hedge { background: var(--c-hedge); }
+  .d-comm  { background: var(--c-comm-dot); }
+  .d-diss  { background: var(--c-diss); }
+  .strip-read { font-size: 14.5px; color: var(--ink-2); margin: 10px 0 6px; max-width: 84ch; }
+
+  /* ---------- Irony callouts ---------- */
+  .ironies { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px; margin: 30px 0 8px; }
+  .irony { border: 1px solid var(--line); border-radius: 6px; padding: 18px; background: var(--wash); }
+  .irony h4 {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    font-weight: 700; font-size: 15px; margin: 0 0 8px;
+  }
+  .irony p { font-size: 14px; color: var(--ink-2); margin: 0; }
+
+  /* ---------- Agreements ---------- */
+  .agree { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 14px; margin: 24px 0 10px; }
+  .agree-card { background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 18px; }
+  .agree-card h4 {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    font-weight: 700; font-size: 15.5px; margin: 0 0 8px;
+  }
+  .agree-card p { font-size: 14px; color: var(--ink-2); margin: 0; }
+  .agree-card .who { font-size: 11px; color: var(--muted); letter-spacing: 0.05em; text-transform: uppercase; margin-top: 10px;
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; }
+
+  /* ---------- Dissenters table ---------- */
+  .table-wrap { overflow-x: auto; margin: 24px 0; border: 1px solid var(--line); border-radius: 6px; background: var(--surface); }
+  table { border-collapse: collapse; width: 100%; min-width: 860px; font-size: 14px; }
+  th {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    font-weight: 700; font-size: 11.5px; letter-spacing: 0.08em; text-transform: uppercase;
+    text-align: left; color: var(--ink-2); padding: 12px 16px; border-bottom: 2px solid var(--ink);
+  }
+  td { padding: 14px 16px; border-bottom: 1px solid var(--line); vertical-align: top; color: var(--ink-2); }
+  tr:last-child td { border-bottom: none; }
+  td.who { color: var(--ink); font-weight: 600; white-space: nowrap;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; font-size: 14px; }
+  td .sub { display: block; font-weight: 400; font-size: 11.5px; color: var(--muted); margin-top: 3px;
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; }
+
+  /* ---------- Sources ---------- */
+  .sources { columns: 2; column-gap: 40px; font-size: 13.5px; margin: 20px 0; }
+  .sources li { margin-bottom: 8px; break-inside: avoid; color: var(--ink-2); }
+  @media (max-width: 720px) { .sources { columns: 1; } }
+  .caveat {
+    border-left: 3px solid var(--accent); padding: 12px 18px; background: var(--wash);
+    font-size: 14px; color: var(--ink-2); margin: 22px 0; border-radius: 0 6px 6px 0;
+  }
+  footer { border-top: 1px solid var(--line); margin-top: 56px; padding: 26px 0 48px; font-size: 12.5px; color: var(--muted); }
+</style>
+</head>
+<body>
+<header class="masthead">
+  <div class="shell">
+    <div class="mast-top">
+      <p class="eyebrow">Field briefing · Frontier AI labs · 13 July 2026 · fact-checked edition</p>
+      <button class="themebtn" id="themeToggle" type="button" aria-label="Toggle color theme">
+        <span class="glyph" aria-hidden="true">◐</span><span id="themeLabel">Theme</span>
+      </button>
+    </div>
+    <h1>One consensus, four doctrines</h1>
+    <p class="dek">What 22 frontier AI labs across the US, Europe, Canada, and China are actually building — where
+    they contradict one another, where they quietly agree, and who is betting more than a billion dollars
+    that large language models are a dead end.</p>
+    <div class="ticker">
+      <span><b>22</b> labs profiled</span>
+      <span><b>4</b> competing doctrines</span>
+      <span><b>$2B+</b> raised on non-LLM architectures since 2024</span>
+      <span><b>61%</b> of OpenRouter tokens served by Chinese open weights (May 2026)</span>
+      <span><b>555,000</b> GPUs at the largest single training site</span>
+    </div>
+  </div>
+  <div class="campband" aria-hidden="true">
+    <span style="background:var(--c-scale)"></span>
+    <span style="background:var(--c-hedge)"></span>
+    <span style="background:var(--c-comm-dot)"></span>
+    <span style="background:var(--c-diss)"></span>
+  </div>
+</header>
+
+<nav class="tabs" aria-label="Report sections">
+  <div class="tabs-in shell" role="tablist">
+    <a role="tab" id="tab-summary" href="#summary" aria-selected="true">§1 Summary</a>
+    <a role="tab" id="tab-atlas" href="#atlas" aria-selected="false">§2 Lab atlas</a>
+    <a role="tab" id="tab-faultlines" href="#faultlines" aria-selected="false">§3 Fault lines</a>
+    <a role="tab" id="tab-consensus" href="#consensus" aria-selected="false">§4 Common ground</a>
+    <a role="tab" id="tab-dissenters" href="#dissenters" aria-selected="false">§5 Dissenters</a>
+    <a role="tab" id="tab-method" href="#method" aria-selected="false">§6 Method &amp; sources</a>
+  </div>
+</nav>
+
+<main class="shell">
+
+  <!-- ============ §1 EXECUTIVE SUMMARY ============ -->
+  <section id="summary" role="tabpanel" aria-labelledby="tab-summary" class="active">
+    <p class="sec-eyebrow">§1</p>
+    <h2>Executive summary</h2>
+    <div class="prose">
+      <p class="lead">Mid-2026 has produced a strange industry: near-total agreement on the product and
+      near-total disagreement on the destination. Every major lab now sells the same thing — an agent that
+      plans, uses tools, and completes work — while the people building them openly dispute whether the
+      technology underneath can ever become general intelligence.</p>
+    </div>
+    <div class="findings">
+      <div class="finding"><span class="n">1.1</span><div>
+        <h4>Agents are the one product thesis everyone shares</h4>
+        <p>OpenAI's GPT-5.6 (public July 9) ships a multi-agent mode that runs concurrent subagents in one request;
+        Anthropic's Opus 4.8 runs hundreds of parallel subagents in "dynamic workflows"; Moonshot's Kimi K2.6 scales an
+        Agent Swarm to 300 sub-agents; ByteDance pitches Seed 2.1 as a model measured by whether it can carry a real
+        task from requirement to validated result. Nobody's flagship pitch in 2026 is a chatbot.</p>
+      </div></div>
+      <div class="finding"><span class="n">1.2</span><div>
+        <h4>Open-vs-closed no longer tracks geography or ideology — it tracks business model</h4>
+        <p>Chinese labs plus Mistral and Ai2 flooded the market with permissively licensed weights: by May 2026, Chinese
+        open models served roughly 61% of tokens on OpenRouter, and Qwen passed one billion cumulative Hugging Face
+        downloads — overtaking Llama as the most-downloaded open family. Meanwhile Meta, the original open-weights
+        champion, went proprietary with Muse Spark in the same year Baidu shipped 100+ open releases.</p>
+      </div></div>
+      <div class="finding"><span class="n">1.3</span><div>
+        <h4>Dissent against LLMs is now capitalized at frontier scale</h4>
+        <p>For the first time, "LLMs won't get there" is a funded position, not a blog post: Yann LeCun's AMI Labs raised
+        a $1.03B seed at $3.5B pre-money (Europe's largest seed ever), Fei-Fei Li's World Labs holds a reported ~$1B for
+        spatial intelligence, and Chollet's Ndea and Friston's Verses round out the counter-bet — with Sutskever's $3B
+        SSI half-in as the "new recipes, still deep learning" hedge.</p>
+      </div></div>
+      <div class="finding"><span class="n">1.4</span><div>
+        <h4>Compute has decoupled from doctrine</h4>
+        <p>SpaceX acquired xAI outright in February (all-stock, ~$1.25T combined) and became a landlord: Colossus 1 —
+        220,000 GPUs and 300MW — is rented to rival Anthropic, Colossus 2 capacity is being marketed too, and Grok's
+        future inside the merged company is an open question. Infrastructure is becoming its own business that pays out
+        no matter whose theory of intelligence wins.</p>
+      </div></div>
+      <div class="finding"><span class="n">1.5</span><div>
+        <h4>Timelines have not converged — capital is funding contradictory physics</h4>
+        <p>Dario Amodei's public position expects systems broadly better than humans at most cognitive tasks by
+        2026–27; LeCun says decades and a different architecture entirely. Both raised billions within months of each
+        other. The market is not pricing a consensus; it is buying every side of the argument.</p>
+      </div></div>
+    </div>
+
+    <div class="fig">
+      <p class="fig-title">Eight months that redrew the map</p>
+      <p class="fig-sub">December 2025 – July 2026 · events color-coded by the doctrine of the lab making them</p>
+      <div class="tl-scroll"><div class="tl">
+        <div class="tl-col">
+          <p class="tl-month">Dec 2025</p>
+          <div class="tl-ev ev-diss"><p><b>AMI Labs launches</b> in Paris — LeCun leaves Meta to build JEPA world models</p></div>
+        </div>
+        <div class="tl-col">
+          <p class="tl-month">Jan 2026</p>
+          <div class="tl-ev ev-scale"><p><b>Colossus hits 2 GW</b> — 555K GPUs, $18B, largest single AI site</p></div>
+          <div class="tl-ev ev-scale"><p><b>Thinking Machines' $50B round collapses;</b> senior staff return to OpenAI</p></div>
+        </div>
+        <div class="tl-col">
+          <p class="tl-month">Feb 2026</p>
+          <div class="tl-ev ev-scale"><p><b>SpaceX acquires xAI</b> — all-stock, ~$1.25T combined entity</p></div>
+          <div class="tl-ev ev-comm"><p><b>Doubao passes 200M DAU</b> as Seed 2.0 ships; Cohere reports $240M ARR</p></div>
+        </div>
+        <div class="tl-col">
+          <p class="tl-month">Mar 2026</p>
+          <div class="tl-ev ev-diss"><p><b>AMI raises $1.03B</b> — Europe's largest-ever seed round</p></div>
+          <div class="tl-ev ev-comm"><p><b>1.4 GW Paris AI campus</b> announced by MGX, Nvidia, Bpifrance &amp; Mistral</p></div>
+        </div>
+        <div class="tl-col">
+          <p class="tl-month">Apr 2026</p>
+          <div class="tl-ev ev-scale"><p><b>Meta ships Muse Spark</b> (Apr 8) — first closed flagship; lands 4th on benchmarks</p></div>
+          <div class="tl-ev ev-comm"><p><b>DeepSeek V4 preview</b> (Apr 24) — $3.48/M output tokens; <b>Kimi K2.6</b> ships Agent Swarm</p></div>
+        </div>
+        <div class="tl-col">
+          <p class="tl-month">May 2026</p>
+          <div class="tl-ev ev-hedge"><p><b>Gemini 3.5 Pro at I/O</b> (May 19) — 2M-token context, Deep Think</p></div>
+          <div class="tl-ev ev-scale"><p><b>Microsoft unveils 7 MAI models</b> at Build — "long-term self-sufficiency"</p></div>
+          <div class="tl-ev ev-comm"><p><b>Chinese open weights hit 61%</b> of OpenRouter tokens</p></div>
+        </div>
+        <div class="tl-col">
+          <p class="tl-month">Jun 2026</p>
+          <div class="tl-ev ev-comm"><p><b>Mistral in talks at €20B</b> — up from €11.7B in nine months</p></div>
+          <div class="tl-ev ev-comm"><p><b>Kimi K2.7-Code</b> (Jun 12) and <b>Seed 2.1</b> (Jun 23) ship as agent models</p></div>
+        </div>
+        <div class="tl-col">
+          <p class="tl-month">Jul 2026</p>
+          <div class="tl-ev ev-scale"><p><b>GPT-5.6 goes public</b> (Jul 9) — Luna/Terra/Sol tiers, after a government safety review</p></div>
+          <div class="tl-ev ev-scale"><p><b>Muse Spark 1.1 + Meta Model API;</b> xAI rebrands as SpaceXAI</p></div>
+        </div>
+      </div></div>
+    </div>
+  </section>
+
+  <!-- ============ §2 ATLAS ============ -->
+  <section id="atlas" role="tabpanel" aria-labelledby="tab-atlas">
+    <p class="sec-eyebrow">§2</p>
+    <h2>The lab atlas: what 22 labs are actually building</h2>
+    <div class="prose">
+      <p>Each lab is tagged with the doctrine it behaves by — not what its press releases say. Figures are from
+      public reporting as of July 2026 and should be treated as directional.</p>
+    </div>
+    <div class="legend" role="note" aria-label="Doctrine legend">
+      <span class="chip"><span class="swatch sw-scale"></span>SCALE BELIEVERS — the current recipe, pushed harder, gets there</span>
+      <span class="chip"><span class="swatch sw-hedge"></span>HEDGED BETS — LLMs necessary but not sufficient</span>
+      <span class="chip"><span class="swatch sw-comm"></span>COMMODITY &amp; SOVEREIGNTY — the model is a means, not the end</span>
+      <span class="chip"><span class="swatch sw-diss"></span>DISSENTERS — LLMs are the wrong substrate for intelligence</span>
+    </div>
+
+    <div class="fig">
+      <p class="fig-title">The atlas at a glance</p>
+      <p class="fig-sub">22 labs by the doctrine they behave by (this report's placement)</p>
+      <div class="bars">
+        <div class="bar-row">
+          <span class="bar-label">Scale believers<span class="sub">OpenAI · Anthropic · Meta · xAI · MSFT · T. Machines</span></span>
+          <span class="bar-track"><span class="bar-fill" style="width:51.6%;background:var(--c-scale)"></span><span class="bar-val">6</span></span>
+        </div>
+        <div class="bar-row">
+          <span class="bar-label">Hedged bets<span class="sub">DeepMind · SSI</span></span>
+          <span class="bar-track"><span class="bar-fill" style="width:17.2%;background:var(--c-hedge)"></span><span class="bar-val">2</span></span>
+        </div>
+        <div class="bar-row">
+          <span class="bar-label">Commodity &amp; sovereignty<span class="sub">Mistral · Cohere · Ai2 · DeepSeek · Qwen · Kimi · GLM · ByteDance · Baidu · Tencent</span></span>
+          <span class="bar-track"><span class="bar-fill" style="width:86%;background:var(--c-comm-dot)"></span><span class="bar-val">10</span></span>
+        </div>
+        <div class="bar-row">
+          <span class="bar-label">Dissenters<span class="sub">AMI · World Labs · Ndea · Verses</span></span>
+          <span class="bar-track"><span class="bar-fill" style="width:34.4%;background:var(--c-diss)"></span><span class="bar-val">4</span></span>
+        </div>
+      </div>
+      <p class="fig-note">The largest camp by number of labs — commodity &amp; sovereignty — is also the one that
+      makes the least money per token. The smallest camp — the hedged middle — contains the most-distributed model on
+      Earth and the best-funded company with no product.</p>
+    </div>
+
+    <div class="region">
+      <div class="region-h"><h3>United States — the frontier six</h3><span class="meta">Closed frontier · massive compute</span></div>
+      <div class="cards">
+
+        <div class="card">
+          <div class="card-top"><span class="name">OpenAI</span><span class="chip"><span class="swatch sw-scale"></span>SCALE</span></div>
+          <p class="meta">SAN FRANCISCO · GPT-5.6 (LUNA / TERRA / SOL) · STARGATE BUILDOUT</p>
+          <p class="flag"><b>Building:</b> a "super-assistant" and the infrastructure of agentic work.</p>
+          <p>GPT-5.6 went public July 9, 2026 in three tiers — Luna (fast), Terra (balanced), Sol (most capable) — after
+          an unusual gated launch: at the US government's request, it shipped first to ~20 trusted partners behind a
+          safety review. Its multi-agent beta runs concurrent subagents in a single request, and ChatGPT Work turns
+          connected apps and files into documents, spreadsheets, and presentations. The API language has shifted from
+          completions to delegation.</p>
+        </div>
+
+        <div class="card">
+          <div class="card-top"><span class="name">Anthropic</span><span class="chip"><span class="swatch sw-scale"></span>SCALE</span></div>
+          <p class="meta">SAN FRANCISCO · OPUS 4.8 / SONNET 5 · AGENT CONTROL PLANE</p>
+          <p class="flag"><b>Building:</b> the trusted agent layer for enterprises and governments.</p>
+          <p>Bets that interpretability and safety research convert into durable advantage in regulated workloads.
+          Opus 4.8's "dynamic workflows" plan a task and run hundreds of parallel subagents in one session, with
+          verification before reporting back; Claude now embeds in Slack (and reportedly soon Microsoft Teams), and
+          enterprise admins get model-level entitlements and spend alerts — the control-plane pitch made concrete.
+          Notably rents 220,000 GPUs and 300MW of inference capacity on xAI's Colossus 1.</p>
+        </div>
+
+        <div class="card">
+          <div class="card-top"><span class="name">Google DeepMind</span><span class="chip"><span class="swatch sw-hedge"></span>HEDGED</span></div>
+          <p class="meta">LONDON / MOUNTAIN VIEW · GEMINI 3.5 PRO · ISOMORPHIC LABS</p>
+          <p class="flag"><b>Building:</b> Gemini everywhere, world models underneath, and a drug-discovery engine.</p>
+          <p>Gemini 3.5 Pro — announced at I/O on May 19, 2026, general availability July — carries a 2M-token context
+          window (the largest of any production frontier model), a built-in Deep Think reasoning mode, and parallel tool
+          orchestration, riding unmatched distribution across Search, Workspace, and 3B+ Android devices. Yet Hassabis
+          publicly argues LLMs "can't understand reality," pushing a convergence of LLMs, world models, and
+          AlphaGo-style planning. Spinoff Isomorphic ($600M raised; Lilly, Novartis, J&amp;J deals) targets first
+          clinical trials of AI-designed drugs by end-2026.</p>
+        </div>
+
+        <div class="card">
+          <div class="card-top"><span class="name">Meta Superintelligence Labs</span><span class="chip"><span class="swatch sw-scale"></span>SCALE</span></div>
+          <p class="meta">MENLO PARK · MUSE SPARK 1.1 · $14.3B SCALE AI DEAL</p>
+          <p class="flag"><b>Building:</b> proprietary "personal superintelligence" — a full reversal of the open-Llama era.</p>
+          <p>After Llama 4 disappointed, Zuckerberg paid $14.3B for half of Scale AI and installed Alexandr Wang as chief
+          AI officer. Muse Spark (April 8, 2026) is Meta's first closed frontier model — deployed instantly across 3B+
+          users on Facebook, Instagram, WhatsApp, and Ray-Ban glasses, but a benchmark disappointment: fourth on the
+          Artificial Analysis index behind GPT-5.4, Gemini 3.1 Pro, and Claude Opus 4.6 at launch. Muse Spark 1.1 and the
+          Meta Model API (July 9) began monetizing it anyway; the thesis is that value accrues to data manufacturing and
+          distribution, not open weights.</p>
+        </div>
+
+        <div class="card">
+          <div class="card-top"><span class="name">xAI → SpaceXAI</span><span class="chip"><span class="swatch sw-scale"></span>SCALE</span></div>
+          <p class="meta">MEMPHIS / HAWTHORNE · GROK · COLOSSUS 2: 555K GPUS / 2 GW</p>
+          <p class="flag"><b>Building:</b> the biggest computer on Earth — and renting much of it out.</p>
+          <p>SpaceX acquired xAI in February 2026 (all-stock, ~$1.25T combined); Musk wound down xAI as a standalone
+          company in May, and the unit rebranded SpaceXAI in July. Colossus 2 — 555,000 GPUs, $18B of hardware, 2GW —
+          is the world's largest single-site installation, but the deeper strategy is landlord: Colossus 1 (220K GPUs,
+          300MW) is leased to Anthropic, Colossus 2 capacity is being marketed to outside tenants including Google, and
+          orbital data centers are the stated long game. Whether Grok keeps frontier ambitions inside SpaceX is openly
+          questioned.</p>
+        </div>
+
+        <div class="card">
+          <div class="card-top"><span class="name">Microsoft AI (MAI)</span><span class="chip"><span class="swatch sw-scale"></span>SCALE</span></div>
+          <p class="meta">REDMOND · 7 MAI MODELS · MAIA SILICON · FAIRWATER DCS</p>
+          <p class="flag"><b>Building:</b> full model self-sufficiency after the OpenAI renegotiation.</p>
+          <p>Suleyman's MAI Superintelligence Team shipped seven in-house models at Build 2026 — MAI-Thinking-1
+          (reasoning), MAI-Code-1-Flash (code), MAI-Image-2.5, MAI-Voice-2, MAI-Transcribe-1.5 and Flash variants —
+          trained from scratch with, Microsoft stresses, no distillation from anyone else's models. MAI-Thinking-1 claims
+          blind-test parity with Claude Sonnet 4.6 and a match with Opus 4.6 on a major coding benchmark. The frame:
+          "long-term self-sufficiency" and a "humanist superintelligence" that complements rather than replaces people.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="region">
+      <div class="region-h"><h3>United States — the pure research bets</h3><span class="meta">Small teams · concentrated theses</span></div>
+      <div class="cards">
+
+        <div class="card">
+          <div class="card-top"><span class="name">Safe Superintelligence (SSI)</span><span class="chip"><span class="swatch sw-hedge"></span>HEDGED</span></div>
+          <p class="meta">PALO ALTO / TEL AVIV · $3B RAISED · $32B VALUATION · NO PRODUCT</p>
+          <p class="flag"><b>Building:</b> one thing — safe superintelligence — and nothing else until then.</p>
+          <p>Sutskever's small lab has raised $3B across two rounds ($1B in September 2024, $2B at a $32B valuation in
+          April 2025, backed by Greenoaks, a16z, Alphabet, and Nvidia) with no product, no papers, and no revenue: the
+          market's purest bet on a founder's research taste. His public framing: the age of scaling is over and a
+          "research era" has begun, where algorithmic innovation — not more GPU-hours on the same recipe — drives
+          progress.</p>
+        </div>
+
+        <div class="card">
+          <div class="card-top"><span class="name">Thinking Machines Lab</span><span class="chip"><span class="swatch sw-scale"></span>SCALE</span></div>
+          <p class="meta">SAN FRANCISCO · TINKER · $2B SEED AT $12B · $50B TALKS COLLAPSED</p>
+          <p class="flag"><b>Building:</b> frontier models plus open tooling — the inverse of SSI's straight shot.</p>
+          <p>Murati raised a record $2B seed at $12B (July 2025, a16z-led) and shipped Tinker, a fine-tuning API for open
+          models, that October. Then the strain showed: talks to raise $5B at a $50B valuation collapsed in January 2026
+          as senior researchers (Zoph, Metz, Schoenholz) defected back to OpenAI. The lab sits at its original $12B with
+          ~150 staff, two live products, billions in Nvidia and Google infrastructure commitments — and its own frontier
+          models still promised.</p>
+        </div>
+
+        <div class="card">
+          <div class="card-top"><span class="name">World Labs</span><span class="chip"><span class="swatch sw-diss"></span>DISSENT</span></div>
+          <p class="meta">SAN FRANCISCO · ~$1B RAISED (REPORTED) · MARBLE</p>
+          <p class="flag"><b>Building:</b> "large world models" — spatial intelligence instead of language.</p>
+          <p>Fei-Fei Li's argument: language is a lossy, low-bandwidth encoding of reality, and intelligence requires
+          reasoning about 3D space, objects, and physical interaction. World Labs generates persistent, navigable 3D
+          environments with Marble — a direct architectural alternative to the text-token frontier.</p>
+        </div>
+
+        <div class="card">
+          <div class="card-top"><span class="name">Ndea</span><span class="chip"><span class="swatch sw-diss"></span>DISSENT</span></div>
+          <p class="meta">SAN FRANCISCO · $43M (REPORTED) · ARC-AGI LINEAGE</p>
+          <p class="flag"><b>Building:</b> program synthesis guided by deep learning — abstraction over memorization.</p>
+          <p>François Chollet (creator of Keras and the ARC-AGI benchmark) holds that LLMs interpolate over memorized
+          patterns and fail at genuinely novel abstraction. Ndea's bet, with Zapier co-founder Mike Knoop, is that
+          searching over programs — with neural networks as the guide — is the missing mechanism for general intelligence.</p>
+        </div>
+
+        <div class="card">
+          <div class="card-top"><span class="name">Ai2 (Allen Institute)</span><span class="chip"><span class="swatch sw-comm"></span>COMMODITY</span></div>
+          <p class="meta">SEATTLE · NONPROFIT · OLMO 3.1 · NSF OMAI</p>
+          <p class="flag"><b>Building:</b> the fully open counter-example — data, code, and weights, all published.</p>
+          <p>Olmo 3.1 (Think and Instruct, 32B) is the strongest "truly open" model line: end-to-end transparency over
+          training data and decisions, not just released weights. Ai2 anchors the US public-interest position while
+          leadership transitions (Farhadi stepped down as CEO in March 2026).</p>
+        </div>
+
+        <div class="card">
+          <div class="card-top"><span class="name">Verses AI</span><span class="chip"><span class="swatch sw-diss"></span>DISSENT</span></div>
+          <p class="meta">LOS ANGELES · PUBLIC CO · GENIUS ENGINE</p>
+          <p class="flag"><b>Building:</b> active-inference agents from neuroscience, not next-token prediction.</p>
+          <p>With Karl Friston as chief scientist, Verses builds Bayesian reasoning agents on the free-energy principle:
+          intelligent systems act to minimize uncertainty about the world. The claim is that LLMs are passive mimicry,
+          while active inference yields agents that model causes, quantify what they don't know, and act accordingly.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="region">
+      <div class="region-h"><h3>Europe &amp; Canada</h3><span class="meta">Sovereignty · enterprise trust · dissent</span></div>
+      <div class="cards">
+
+        <div class="card">
+          <div class="card-top"><span class="name">Mistral AI</span><span class="chip"><span class="swatch sw-comm"></span>COMMODITY</span></div>
+          <p class="meta">PARIS · €11.7B → TALKS AT €20B · ARR $400M → $1B TARGET</p>
+          <p class="flag"><b>Building:</b> Europe's sovereign AI stack — open weights, on-prem agents, own data centers.</p>
+          <p>The flagship of European strategic autonomy: air-gapped, self-hosted deployments that sidestep US Cloud Act
+          exposure, ARR that grew twentyfold to $400M by February 2026 (target: $1B by year-end), and a reported €3B
+          raise in the works at a €20B valuation. Its compute is becoming sovereign too: an $830M debt-financed data
+          center near Paris came online in Q2 2026, 200MW of EU capacity is targeted by end-2027, and a 1.4GW AI campus
+          with MGX, Nvidia, and Bpifrance is slated for 2028.</p>
+        </div>
+
+        <div class="card">
+          <div class="card-top"><span class="name">AMI Labs</span><span class="chip"><span class="swatch sw-diss"></span>DISSENT</span></div>
+          <p class="meta">PARIS · $1.03B SEED · $3.5B PRE — LARGEST EU SEED EVER</p>
+          <p class="flag"><b>Building:</b> JEPA world models — the largest single bet that LLMs are a dead end.</p>
+          <p>Yann LeCun left Meta after the Superintelligence Labs reorg and launched AMI in Paris in December 2025 with
+          CEO Alexandre LeBrun; by March 2026 it held Europe's largest-ever seed round, backed by Bezos Expeditions,
+          Eric Schmidt, Xavier Niel, and the Berners-Lees. The thesis he's argued for years: autoregressive token
+          prediction cannot plan, lacks persistent memory, and won't reach general intelligence at any scale. AMI trains
+          joint-embedding predictive architectures aimed at industry, robotics, and healthcare — prediction in
+          representation space, not in words.</p>
+        </div>
+
+        <div class="card">
+          <div class="card-top"><span class="name">Cohere</span><span class="chip"><span class="swatch sw-comm"></span>COMMODITY</span></div>
+          <p class="meta">TORONTO · ~$7B VALUATION · $240M ARR · IPO WATCH</p>
+          <p class="flag"><b>Building:</b> security-first enterprise agents, explicitly not chasing AGI.</p>
+          <p>North — GA since August 2025, deployed by RBC, Dell, and LG CNS — runs agents inside a customer's own
+          infrastructure, with a HiddenLayer partnership targeting prompt injection and data leakage. Cohere closed 2025
+          at $240M ARR with &gt;50% quarter-over-quarter growth, hired Uber's IPO-era finance chief as CFO, and is the
+          clearest "AGI is not the business" position among Western labs — sovereignty and data control are. No S-1 has
+          been filed as of mid-2026.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="region">
+      <div class="region-h"><h3>China — the open-weights offensive</h3><span class="meta">Permissive licenses · brutal pricing · distribution</span></div>
+      <div class="cards">
+
+        <div class="card">
+          <div class="card-top"><span class="name">DeepSeek</span><span class="chip"><span class="swatch sw-comm"></span>COMMODITY</span></div>
+          <p class="meta">HANGZHOU · V4 PRO 1.6T / V4 FLASH 284B · MIT WEIGHTS</p>
+          <p class="flag"><b>Building:</b> frontier-class reasoning at a fraction of frontier price.</p>
+          <p>The V4 preview (April 24, 2026) — a 1.6T-parameter Pro and 284B Flash, tuned for agentic tasks and tightly
+          integrated with Huawei silicon — priced output at $3.48 per million tokens against OpenAI's $30 and
+          Anthropic's $25, then cut further with promotional and cache discounts within days. DeepSeek alone now serves
+          16.3% of all OpenRouter tokens — more than any other single provider — and its efficiency innovations forced
+          repricing across every Western lab's API sheet.</p>
+        </div>
+
+        <div class="card">
+          <div class="card-top"><span class="name">Alibaba (Qwen)</span><span class="chip"><span class="swatch sw-comm"></span>COMMODITY</span></div>
+          <p class="meta">HANGZHOU · APACHE 2.0 · 1B+ HUGGING FACE DOWNLOADS</p>
+          <p class="flag"><b>Building:</b> the default base model of the open ecosystem — to sell cloud.</p>
+          <p>Qwen owns the ecosystem: past one billion cumulative Hugging Face downloads, it overtook Llama as the
+          most-downloaded, most-derived open model family in the world, released at relentless cadence. The models are
+          demand generation for Alibaba Cloud and consumer surfaces — the clearest statement that models themselves are
+          a commodity.</p>
+        </div>
+
+        <div class="card">
+          <div class="card-top"><span class="name">Moonshot AI (Kimi)</span><span class="chip"><span class="swatch sw-comm"></span>COMMODITY</span></div>
+          <p class="meta">BEIJING · K2.6 / K2.7-CODE · 1T MOE, 32B ACTIVE · MODIFIED MIT</p>
+          <p class="flag"><b>Building:</b> open agentic models tuned for long tool-use loops.</p>
+          <p>Kimi K2.6 (April 2026) is a 1T-parameter mixture-of-experts (32B active, 256K context) whose Agent Swarm
+          coordinates up to 300 domain-specialized sub-agents across 4,000 steps in one autonomous run; K2.7-Code
+          followed in June, cutting reasoning-token use 30%. Five major releases in under a year — the open-weights
+          answer to Western agentic flagships, at a cadence Western labs don't match.</p>
+        </div>
+
+        <div class="card">
+          <div class="card-top"><span class="name">Zhipu AI (GLM)</span><span class="chip"><span class="swatch sw-comm"></span>COMMODITY</span></div>
+          <p class="meta">BEIJING · GLM 5.X · MIT WEIGHTS · CODING-FIRST FLAGSHIP</p>
+          <p class="flag"><b>Building:</b> open coding models that trade blows with the Western frontier.</p>
+          <p>GLM 5.1/5.2 is the coding-first open flagship, breaking through on planning quality and long-horizon
+          coding; on coding benchmarks it competes directly with closed Western models at a fraction of the cost, making
+          it a staple of the agentic-coding stack outside the US.</p>
+        </div>
+
+        <div class="card">
+          <div class="card-top"><span class="name">ByteDance (Seed / Doubao)</span><span class="chip"><span class="swatch sw-comm"></span>COMMODITY</span></div>
+          <p class="meta">BEIJING · SEED 2.1 · 200M DAU POST-LUNAR-NEW-YEAR</p>
+          <p class="flag"><b>Building:</b> the most-used consumer AI in the world's largest market.</p>
+          <p>Doubao dominates Chinese consumer AI — 155M weekly users in early 2026, past 200M daily actives after
+          Lunar New Year — while overseas twin Dola targets 30M DAU this year. Seed 2.1 (June 2026) is pitched as an
+          agent judged by task completion, priced far below Western tiers, with strong media/video capability and
+          hardware tie-ins. Value is captured in the app and ad surfaces, not the model.</p>
+        </div>
+
+        <div class="card">
+          <div class="card-top"><span class="name">Baidu (ERNIE)</span><span class="chip"><span class="swatch sw-comm"></span>COMMODITY</span></div>
+          <p class="meta">BEIJING · ERNIE 5.0 / 5.1 · 2.4T OMNIMODAL MOE · KUNLUN CHIPS</p>
+          <p class="flag"><b>Building:</b> an open, home-grown full stack — from silicon to search.</p>
+          <p>The mirror image of Meta's pivot: from zero Hugging Face releases in 2024 to 100+ in 2025. ERNIE 5.0 — a
+          2.4T-parameter omnimodal MoE activating under 3% of parameters per inference, trained on Baidu's own Kunlun
+          silicon — serves an assistant with 200M monthly users; ERNIE 5.1 cracked the global top five in 2026, and the
+          new Kunlun M100/M300 chips extend sovereignty to the silicon level.</p>
+        </div>
+
+        <div class="card">
+          <div class="card-top"><span class="name">Tencent (Hunyuan)</span><span class="chip"><span class="swatch sw-comm"></span>COMMODITY</span></div>
+          <p class="meta">SHENZHEN · WECHAT-FIRST · 3D/MEDIA OPEN MODELS</p>
+          <p class="flag"><b>Building:</b> AI woven into WeChat, gaming, and cloud rather than sold as a model.</p>
+          <p>Hunyuan lives inside Tencent's ecosystem — WeChat mini-programs, games, enterprise SaaS — with selective
+          open-sourcing of 3D and media models. A 2026 "self-correction" pivot refocused spending on surfaces where
+          Tencent already owns the user.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="fig">
+      <p class="fig-title">The price war, in one chart</p>
+      <p class="fig-sub">Frontier-tier API price, $ per 1M output tokens · April 2026, at DeepSeek V4's launch</p>
+      <div class="bars">
+        <div class="bar-row">
+          <span class="bar-label">OpenAI frontier<span class="sub">closed</span></span>
+          <span class="bar-track"><span class="bar-fill" style="width:86%;background:var(--c-scale)"></span><span class="bar-val">$30.00</span></span>
+        </div>
+        <div class="bar-row">
+          <span class="bar-label">Anthropic frontier<span class="sub">closed</span></span>
+          <span class="bar-track"><span class="bar-fill" style="width:71.7%;background:var(--c-scale)"></span><span class="bar-val">$25.00</span></span>
+        </div>
+        <div class="bar-row">
+          <span class="bar-label">DeepSeek V4-Pro<span class="sub">open weights, MIT</span></span>
+          <span class="bar-track"><span class="bar-fill" style="width:10%;background:var(--c-comm-dot)"></span><span class="bar-val">$3.48</span></span>
+        </div>
+      </div>
+      <p class="fig-note">Two days after launch DeepSeek added a 75% promotional discount on V4-Pro, then cut cache-hit
+      input prices to a tenth of their previous level — the gap above is the conservative version.</p>
+    </div>
+  </section>
+
+  <!-- ============ §3 FAULT LINES ============ -->
+  <section id="faultlines" role="tabpanel" aria-labelledby="tab-faultlines">
+    <p class="sec-eyebrow">§3</p>
+    <h2>Fault lines: where the labs contradict each other</h2>
+    <div class="prose">
+      <p>Five questions on which the industry gives incompatible answers. Positions are inferred from what labs
+      ship, license, and say — hover any dot for the full name.</p>
+    </div>
+    <div class="legend" role="note" aria-label="Doctrine legend">
+      <span class="chip"><span class="swatch sw-scale"></span>SCALE</span>
+      <span class="chip"><span class="swatch sw-hedge"></span>HEDGED</span>
+      <span class="chip"><span class="swatch sw-comm"></span>COMMODITY</span>
+      <span class="chip"><span class="swatch sw-diss"></span>DISSENT</span>
+    </div>
+
+    <div class="strip-block">
+      <p class="strip-q">Fault line 1 — Should frontier weights be open?</p>
+      <div class="strip-scroll"><div class="strip" role="img" aria-label="Spectrum from fully open weights to fully closed. Ai2, DeepSeek, Qwen, GLM, Kimi, Mistral and ERNIE sit at the open end; Cohere mid-left; OpenAI mid-right; DeepMind, Meta, xAI, Anthropic and Microsoft at the closed end.">
+        <span class="pole l">Fully open</span><span class="pole r">Fully closed</span>
+        <div class="axis"></div>
+        <span class="dot d-comm" style="left:2%"  tabindex="0" data-full="Ai2 — data, code &amp; weights all open"></span><span class="dotlabel up" style="left:2%">Ai2</span>
+        <span class="dot d-comm" style="left:8%"  tabindex="0" data-full="DeepSeek — MIT-licensed weights"></span><span class="dotlabel down" style="left:8%">DeepSeek</span>
+        <span class="dot d-comm" style="left:14%" tabindex="0" data-full="Alibaba Qwen — Apache 2.0"></span><span class="dotlabel up" style="left:14%">Qwen</span>
+        <span class="dot d-comm" style="left:20%" tabindex="0" data-full="Zhipu GLM — MIT weights"></span><span class="dotlabel down" style="left:20%">GLM</span>
+        <span class="dot d-comm" style="left:26%" tabindex="0" data-full="Moonshot Kimi — modified MIT"></span><span class="dotlabel up" style="left:26%">Kimi</span>
+        <span class="dot d-comm" style="left:32%" tabindex="0" data-full="Mistral — open weights + commercial tiers"></span><span class="dotlabel down" style="left:32%">Mistral</span>
+        <span class="dot d-comm" style="left:38%" tabindex="0" data-full="Baidu ERNIE — pivoted open in 2025"></span><span class="dotlabel up" style="left:38%">ERNIE</span>
+        <span class="dot d-comm" style="left:46%" tabindex="0" data-full="Cohere — open Aya line, closed North platform"></span><span class="dotlabel down" style="left:46%">Cohere</span>
+        <span class="dot d-scale" style="left:62%" tabindex="0" data-full="OpenAI — gpt-oss sideline, frontier closed"></span><span class="dotlabel up" style="left:62%">OpenAI</span>
+        <span class="dot d-hedge" style="left:72%" tabindex="0" data-full="Google DeepMind — small Gemma open, Gemini closed"></span><span class="dotlabel down" style="left:72%">DeepMind</span>
+        <span class="dot d-scale" style="left:80%" tabindex="0" data-full="Meta MSL — Muse Spark is proprietary"></span><span class="dotlabel up" style="left:80%">Meta</span>
+        <span class="dot d-scale" style="left:86%" tabindex="0" data-full="xAI/SpaceXAI — older Grok weights only"></span><span class="dotlabel down" style="left:86%">xAI</span>
+        <span class="dot d-scale" style="left:92%" tabindex="0" data-full="Anthropic — fully closed frontier"></span><span class="dotlabel up" style="left:92%">Anthropic</span>
+        <span class="dot d-scale" style="left:98%" tabindex="0" data-full="Microsoft MAI — in-house, closed"></span><span class="dotlabel down" style="left:98%">MSFT</span>
+      </div></div>
+      <p class="strip-read">The open end is now overwhelmingly Chinese plus Mistral and Ai2 — and it's winning on volume.
+      The closed end justifies itself with safety and with the one market that still pays a premium: frontier coding
+      agents. The line divides business models, not values: open labs monetize distribution, cloud, and sovereignty;
+      closed labs monetize the model itself.</p>
+    </div>
+
+    <div class="fig">
+      <p class="fig-title">Who actually serves the tokens</p>
+      <p class="fig-sub">Composition of token volume on OpenRouter, the largest neutral model router</p>
+      <div class="legend-mini">
+        <span class="chip"><span class="swatch" style="background:var(--c-comm-dot)"></span>Chinese open-weight models</span>
+        <span class="chip"><span class="swatch" style="background:var(--c-scale)"></span>US models</span>
+        <span class="chip"><span class="swatch" style="background:var(--muted)"></span>Everything else</span>
+      </div>
+      <div class="stack">
+        <span class="stack-label">Late 2024</span>
+        <div class="stack-bar">
+          <span class="seg" style="width:1.2%;background:var(--c-comm-dot)" tabindex="0" data-full="Chinese open weights — 1.2%"></span>
+          <span class="seg" style="width:70%;background:var(--c-scale)" tabindex="0" data-full="US models — ~70%"><span class="seg-label">US ~70%</span></span>
+          <span class="seg" style="width:28.8%;background:var(--muted)" tabindex="0" data-full="Everything else — ~29%"><span class="seg-label">other</span></span>
+        </div>
+      </div>
+      <div class="stack">
+        <span class="stack-label">May 2026</span>
+        <div class="stack-bar">
+          <span class="seg" style="width:61%;background:var(--c-comm-dot)" tabindex="0" data-full="Chinese open weights — 61%"><span class="seg-label">Chinese open weights 61%</span></span>
+          <span class="seg" style="width:30%;background:var(--c-scale)" tabindex="0" data-full="US models — ~30%"><span class="seg-label">US ~30%</span></span>
+          <span class="seg" style="width:9%;background:var(--muted)" tabindex="0" data-full="Everything else — ~9%"></span>
+        </div>
+      </div>
+      <p class="fig-note">DeepSeek alone serves 16.3% of all OpenRouter tokens — the largest single provider, ahead of
+      Google, Anthropic (13.3%), and OpenAI. Four of the five most-used models are Chinese; Llama, the open-weight
+      leader two years ago, has fallen off the rankings entirely.</p>
+    </div>
+
+    <div class="strip-block">
+      <p class="strip-q">Fault line 2 — Does the current recipe (transformers + RL + compute) reach general intelligence?</p>
+      <div class="strip-scroll"><div class="strip" role="img" aria-label="Spectrum from scale the current recipe to new architecture required. xAI, Meta, OpenAI, Microsoft, Anthropic near the scaling end; DeepMind in the middle; SSI right of middle; Ndea, World Labs, AMI Labs and Verses at the new-architecture end.">
+        <span class="pole l">Scale the current recipe</span><span class="pole r">New architecture required</span>
+        <div class="axis"></div>
+        <span class="dot d-scale" style="left:4%"  tabindex="0" data-full="xAI/SpaceXAI — Grok 5 training on Colossus 2"></span><span class="dotlabel up" style="left:4%">xAI</span>
+        <span class="dot d-scale" style="left:11%" tabindex="0" data-full="Meta MSL — superintelligence via data + scale"></span><span class="dotlabel down" style="left:11%">Meta</span>
+        <span class="dot d-scale" style="left:18%" tabindex="0" data-full="OpenAI — scaling + RL + agents"></span><span class="dotlabel up" style="left:18%">OpenAI</span>
+        <span class="dot d-scale" style="left:25%" tabindex="0" data-full="Microsoft MAI — trained-from-scratch frontier"></span><span class="dotlabel down" style="left:25%">MSFT</span>
+        <span class="dot d-scale" style="left:31%" tabindex="0" data-full="Anthropic — scaling believer, safety-constrained"></span><span class="dotlabel up" style="left:31%">Anthropic</span>
+        <span class="dot d-comm" style="left:39%" tabindex="0" data-full="DeepSeek — same recipe, radical efficiency"></span><span class="dotlabel down" style="left:39%">DeepSeek</span>
+        <span class="dot d-hedge" style="left:52%" tabindex="0" data-full="Google DeepMind — LLMs + world models + planning"></span><span class="dotlabel up" style="left:52%">DeepMind</span>
+        <span class="dot d-hedge" style="left:64%" tabindex="0" data-full="SSI — 'research era': new recipes, still deep learning"></span><span class="dotlabel down" style="left:64%">SSI</span>
+        <span class="dot d-diss" style="left:80%" tabindex="0" data-full="Ndea — program synthesis"></span><span class="dotlabel up" style="left:80%">Ndea</span>
+        <span class="dot d-diss" style="left:87%" tabindex="0" data-full="World Labs — spatial intelligence"></span><span class="dotlabel down" style="left:87%">W. Labs</span>
+        <span class="dot d-diss" style="left:93%" tabindex="0" data-full="AMI Labs — JEPA world models"></span><span class="dotlabel up" style="left:93%">AMI</span>
+        <span class="dot d-diss" style="left:98%" tabindex="0" data-full="Verses — active inference"></span><span class="dotlabel down" style="left:98%">Verses</span>
+      </div></div>
+      <p class="strip-read">This is the deepest schism in the field. The left end is spending tens of billions on the
+      assumption the recipe holds; the right end has now raised billions on the assumption it doesn't. DeepMind is the
+      pivotal middle case: it ships the world's most-distributed LLM while its CEO argues LLMs alone can't understand
+      reality — hedging both outcomes.</p>
+    </div>
+
+    <div class="strip-block">
+      <p class="strip-q">Fault line 3 — When do systems broadly better than humans arrive?</p>
+      <div class="strip-scroll"><div class="strip" role="img" aria-label="Spectrum from around 2027 to decades away. Anthropic, xAI and OpenAI at the soon end; Meta and SSI left-of-middle; DeepMind and Microsoft middle; Cohere, Ndea, AMI Labs and Gary Marcus at the decades end.">
+        <span class="pole l">≈ 2027</span><span class="pole r">Decades — if ever</span>
+        <div class="axis"></div>
+        <span class="dot d-scale" style="left:4%"  tabindex="0" data-full="Anthropic — Amodei: powerful AI 2026–27"></span><span class="dotlabel up" style="left:4%">Anthropic</span>
+        <span class="dot d-scale" style="left:10%" tabindex="0" data-full="xAI — Musk: smarter than any human, imminently"></span><span class="dotlabel down" style="left:10%">xAI</span>
+        <span class="dot d-scale" style="left:17%" tabindex="0" data-full="OpenAI — Altman: superintelligence within a few thousand days"></span><span class="dotlabel up" style="left:17%">OpenAI</span>
+        <span class="dot d-scale" style="left:26%" tabindex="0" data-full="Meta MSL — Wang: biggest discoveries within 5 years"></span><span class="dotlabel down" style="left:26%">Meta</span>
+        <span class="dot d-hedge" style="left:38%" tabindex="0" data-full="SSI — inevitable, timeline undisclosed"></span><span class="dotlabel up" style="left:38%">SSI</span>
+        <span class="dot d-hedge" style="left:48%" tabindex="0" data-full="Google DeepMind — Hassabis: ~5–10 years"></span><span class="dotlabel down" style="left:48%">DeepMind</span>
+        <span class="dot d-scale" style="left:57%" tabindex="0" data-full="Microsoft MAI — Suleyman: superintelligence, cautiously, over a decade"></span><span class="dotlabel up" style="left:57%">MSFT</span>
+        <span class="dot d-comm" style="left:72%" tabindex="0" data-full="Cohere — AGI framing rejected; not the business"></span><span class="dotlabel down" style="left:72%">Cohere</span>
+        <span class="dot d-diss" style="left:82%" tabindex="0" data-full="Ndea — Chollet: not on the current trajectory"></span><span class="dotlabel up" style="left:82%">Ndea</span>
+        <span class="dot d-diss" style="left:90%" tabindex="0" data-full="AMI Labs — LeCun: decades, different architecture"></span><span class="dotlabel down" style="left:90%">AMI</span>
+        <span class="dot d-diss" style="left:97%" tabindex="0" data-full="Gary Marcus — critic: not with these systems"></span><span class="dotlabel up" style="left:97%">Marcus</span>
+      </div></div>
+      <p class="strip-read">Anthropic's formal submission to the US government expects powerful AI by late 2026 or early
+      2027 — among the most aggressive claims from any CEO. LeCun says decades and a different substrate. Nothing in
+      2026 narrowed this spread; if anything the poles both hardened, and both got funded.</p>
+    </div>
+
+    <div class="strip-block">
+      <p class="strip-q">Fault line 4 — Commercialize now, or straight shot to superintelligence?</p>
+      <div class="strip-scroll"><div class="strip" role="img" aria-label="Spectrum from ship products now to no product until superintelligence. ByteDance, OpenAI, Mistral, Cohere, Anthropic and DeepMind at the ship end; Thinking Machines and World Labs middle; Meta right-of-middle; AMI Labs further right; SSI at the extreme no-product end.">
+        <span class="pole l">Ship everything, now</span><span class="pole r">No product until superintelligence</span>
+        <div class="axis"></div>
+        <span class="dot d-comm" style="left:2%"  tabindex="0" data-full="ByteDance — 200M daily consumer users"></span><span class="dotlabel up" style="left:2%">ByteDance</span>
+        <span class="dot d-scale" style="left:8%"  tabindex="0" data-full="OpenAI — consumer + enterprise + API, all at once"></span><span class="dotlabel down" style="left:8%">OpenAI</span>
+        <span class="dot d-comm" style="left:14%" tabindex="0" data-full="Mistral — enterprise deployments fund the lab"></span><span class="dotlabel up" style="left:14%">Mistral</span>
+        <span class="dot d-comm" style="left:20%" tabindex="0" data-full="Cohere — revenue-first, IPO track"></span><span class="dotlabel down" style="left:20%">Cohere</span>
+        <span class="dot d-scale" style="left:26%" tabindex="0" data-full="Anthropic — commercial, safety-gated"></span><span class="dotlabel up" style="left:26%">Anthropic</span>
+        <span class="dot d-hedge" style="left:33%" tabindex="0" data-full="Google DeepMind — research lab inside a product company"></span><span class="dotlabel down" style="left:33%">DeepMind</span>
+        <span class="dot d-scale" style="left:44%" tabindex="0" data-full="Thinking Machines — tooling first, frontier models next"></span><span class="dotlabel up" style="left:44%">T. Machines</span>
+        <span class="dot d-diss" style="left:54%" tabindex="0" data-full="World Labs — shipped Marble, research-heavy"></span><span class="dotlabel down" style="left:54%">W. Labs</span>
+        <span class="dot d-scale" style="left:63%" tabindex="0" data-full="Meta MSL — long superintelligence bet, some releases"></span><span class="dotlabel up" style="left:63%">Meta</span>
+        <span class="dot d-diss" style="left:78%" tabindex="0" data-full="AMI Labs — research-first, years from product"></span><span class="dotlabel down" style="left:78%">AMI</span>
+        <span class="dot d-hedge" style="left:97%" tabindex="0" data-full="SSI — 'first product will be safe superintelligence'"></span><span class="dotlabel up" style="left:97%">SSI</span>
+      </div></div>
+      <p class="strip-read">SSI's "straight shot" — $3B raised, nothing shipped — is the purest rejection of the
+      commercialize-as-you-go consensus. Everyone else has concluded that products fund the mission (and, per OpenAI and
+      Anthropic, that deployment is how you learn to make systems safe). Sutskever's counter is that products create
+      gravity that pulls research off course — and Thinking Machines' January defections are his exhibit A.</p>
+    </div>
+
+    <div class="strip-block">
+      <p class="strip-q">Fault line 5 — Is the model the product, or a loss-leader for something else?</p>
+      <div class="strip-scroll"><div class="strip" role="img" aria-label="Spectrum from the model is the product to the model is a loss-leader. Anthropic, OpenAI, Mistral, Cohere at the model-as-product end; Microsoft middle; DeepMind, Qwen, ERNIE, ByteDance, xAI and Tencent at the loss-leader end.">
+        <span class="pole l">The model is the product</span><span class="pole r">The model sells something else</span>
+        <div class="axis"></div>
+        <span class="dot d-scale" style="left:3%"  tabindex="0" data-full="Anthropic — model + agent platform revenue"></span><span class="dotlabel up" style="left:3%">Anthropic</span>
+        <span class="dot d-scale" style="left:9%"  tabindex="0" data-full="OpenAI — subscriptions + API are the business"></span><span class="dotlabel down" style="left:9%">OpenAI</span>
+        <span class="dot d-comm" style="left:19%" tabindex="0" data-full="Mistral — deployments &amp; sovereignty contracts"></span><span class="dotlabel up" style="left:19%">Mistral</span>
+        <span class="dot d-comm" style="left:26%" tabindex="0" data-full="Cohere — enterprise platform revenue"></span><span class="dotlabel down" style="left:26%">Cohere</span>
+        <span class="dot d-scale" style="left:46%" tabindex="0" data-full="Microsoft MAI — models feed Copilot &amp; Azure"></span><span class="dotlabel up" style="left:46%">MSFT</span>
+        <span class="dot d-hedge" style="left:60%" tabindex="0" data-full="Google DeepMind — Gemini defends Search, sells Cloud"></span><span class="dotlabel down" style="left:60%">DeepMind</span>
+        <span class="dot d-comm" style="left:72%" tabindex="0" data-full="Qwen — demand generation for Alibaba Cloud"></span><span class="dotlabel up" style="left:72%">Qwen</span>
+        <span class="dot d-comm" style="left:79%" tabindex="0" data-full="Baidu ERNIE — defends search, sells cloud &amp; chips"></span><span class="dotlabel down" style="left:79%">ERNIE</span>
+        <span class="dot d-comm" style="left:86%" tabindex="0" data-full="ByteDance — models feed apps &amp; ad surfaces"></span><span class="dotlabel up" style="left:86%">ByteDance</span>
+        <span class="dot d-scale" style="left:93%" tabindex="0" data-full="xAI/SpaceXAI — compute landlord; Grok feeds X"></span><span class="dotlabel down" style="left:93%">xAI</span>
+        <span class="dot d-comm" style="left:98%" tabindex="0" data-full="Tencent — Hunyuan serves WeChat &amp; gaming"></span><span class="dotlabel up" style="left:98%">Tencent</span>
+      </div></div>
+      <p class="strip-read">The pure-play labs (left) must win on model quality because the model is all they sell.
+      The platforms (right) can give the model away forever — which is exactly what China's ecosystem players and
+      Google are doing, and why the open-weights flood is a rational strategy rather than altruism.</p>
+    </div>
+
+    <h3>Three ironies worth naming</h3>
+    <div class="ironies">
+      <div class="irony">
+        <h4>The open-source flip-flop</h4>
+        <p>Meta, the company that made open weights a movement, went proprietary with Muse Spark in the same twelve
+        months that Baidu — long a closed shop — released 100+ open models and Qwen overtook Llama as the world's
+        most-downloaded open family. The largest reversals in the debate happened in opposite directions, for the same
+        reason: each side concluded its old strategy wasn't winning.</p>
+      </div>
+      <div class="irony">
+        <h4>The landlord's tenant</h4>
+        <p>Colossus 1's mixed GPU architecture proved unusable for training Grok — so it was leased to Anthropic, a
+        direct competitor, for inference: 220,000 GPUs and 300MW. Musk now makes money when Claude answers a question,
+        and Colossus 2 capacity is being marketed to outside tenants too. Infrastructure economics has quietly
+        overridden the model war.</p>
+      </div>
+      <div class="irony">
+        <h4>The hedged champion</h4>
+        <p>The CEO shipping the world's most-distributed LLM — Demis Hassabis, with Gemini on 3B+ devices — is also
+        the most senior voice arguing that language models "can't understand reality" and that world models are
+        required. DeepMind is simultaneously the strongest evidence for and against the scaling thesis.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ §4 COMMON GROUND ============ -->
+  <section id="consensus" role="tabpanel" aria-labelledby="tab-consensus">
+    <p class="sec-eyebrow">§4</p>
+    <h2>Common ground: what everyone now agrees on</h2>
+    <div class="prose">
+      <p>Strip away the doctrine and the labs' actual 2026 behavior converges on six points — several of which
+      were contested as recently as 2024.</p>
+    </div>
+    <div class="agree">
+      <div class="agree-card">
+        <h4>Agents are the product; chat is over</h4>
+        <p>Every flagship release of 2026 is framed as an agent that plans, uses tools, and completes multi-step work —
+        GPT-5.6's multi-agent mode, Opus 4.8's dynamic workflows, Kimi's Agent Swarm, Seed 2.1's task-completion
+        framing. The API business itself is being reshaped around delegation rather than completion.</p>
+        <p class="who">OpenAI · Anthropic · DeepMind · Microsoft · Moonshot · Cohere · ByteDance</p>
+      </div>
+      <div class="agree-card">
+        <h4>Post-training and reasoning are the active scaling axis</h4>
+        <p>Naive pretraining scaling has quietly plateaued as a strategy everywhere; the gains of 2025–26 came from
+        reinforcement learning, verifier-guided reasoning, and test-time compute. Even Sutskever's "the age of scaling
+        is over" is only a sharper version of what every lab's training pipeline already concedes.</p>
+        <p class="who">Universal — including the scaling believers</p>
+      </div>
+      <div class="agree-card">
+        <h4>Coding is the killer app that pays</h4>
+        <p>Agentic coding is the one market where customers demonstrably pay a large premium for frontier intelligence —
+        which is why every lab ships a dedicated coding model (MAI-Code-1-Flash, Kimi K2.7-Code, GLM's coding-first
+        line, Claude's coding agents, GPT-5.6's developer positioning) and why coding benchmarks became the de facto
+        scoreboard.</p>
+        <p class="who">Universal</p>
+      </div>
+      <div class="agree-card">
+        <h4>Compute gets built regardless of doctrine</h4>
+        <p>Colossus 2 at 2GW, Stargate, Fairwater, a 1.4GW Paris campus — and even the architecture dissenters raised
+        ten-figure rounds that go substantially to GPUs. Whatever intelligence turns out to be, every faction is
+        behaving as if it will be expensive to compute.</p>
+        <p class="who">Universal — even the LLM skeptics</p>
+      </div>
+      <div class="agree-card">
+        <h4>Science is the next frontier claim</h4>
+        <p>The stated endgame has shifted from "assistant" to "discovery": Isomorphic's AI-designed drugs approaching
+        trials, GPT-5.6's scientific-research positioning, Anthropic's research institute agenda, Wang's "biggest
+        discoveries in history." Accelerating science is now the shared justification for the entire buildout.</p>
+        <p class="who">DeepMind · OpenAI · Anthropic · Meta · Microsoft</p>
+      </div>
+      <div class="agree-card">
+        <h4>Everyone hedges with world models</h4>
+        <p>The dissenters' core idea is being absorbed by the mainstream: DeepMind's world-model convergence,
+        video-generation-as-simulation efforts, ByteDance naming world models a 2026 priority, and embodied bets across
+        the frontier labs. The disagreement is no longer whether world models matter — it's whether they emerge from
+        scaled LLMs or must replace them.</p>
+        <p class="who">DeepMind · OpenAI · Meta · ByteDance · AMI · World Labs</p>
+      </div>
+    </div>
+
+    <div class="fig">
+      <p class="fig-title">The buildout, in gigawatts</p>
+      <p class="fig-sub">Announced single-site or single-program AI compute capacity · press-reported, mid-2026</p>
+      <div class="bars">
+        <div class="bar-row">
+          <span class="bar-label">Stargate program<span class="sub">OpenAI+partners · announced target</span></span>
+          <span class="bar-track"><span class="bar-fill ghost" style="width:78%;background:var(--c-scale)"></span><span class="bar-val">~10 GW target</span></span>
+        </div>
+        <div class="bar-row">
+          <span class="bar-label">Colossus 2, Memphis<span class="sub">SpaceXAI · 555K GPUs · $18B</span></span>
+          <span class="bar-track"><span class="bar-fill" style="width:15.6%;background:var(--c-scale)"></span><span class="bar-val">2.0 GW</span></span>
+        </div>
+        <div class="bar-row">
+          <span class="bar-label">MGX Paris campus<span class="sub">MGX · Nvidia · Bpifrance · ops 2028</span></span>
+          <span class="bar-track"><span class="bar-fill ghost" style="width:10.9%;background:var(--c-comm-dot)"></span><span class="bar-val">1.4 GW planned</span></span>
+        </div>
+        <div class="bar-row">
+          <span class="bar-label">Anthropic's Colossus 1 lease<span class="sub">220K GPUs · rented from SpaceXAI</span></span>
+          <span class="bar-track"><span class="bar-fill" style="width:2.3%;background:var(--c-scale)"></span><span class="bar-val">0.3 GW</span></span>
+        </div>
+        <div class="bar-row">
+          <span class="bar-label">Mistral EU capacity<span class="sub">own target by end-2027</span></span>
+          <span class="bar-track"><span class="bar-fill ghost" style="width:1.6%;background:var(--c-comm-dot)"></span><span class="bar-val">0.2 GW target</span></span>
+        </div>
+      </div>
+      <p class="fig-note">Lighter bars are announced targets, not operating capacity. For scale: 1 GW is roughly the
+      output of a large nuclear reactor, running continuously.</p>
+    </div>
+  </section>
+
+  <!-- ============ §5 DISSENTERS ============ -->
+  <section id="dissenters" role="tabpanel" aria-labelledby="tab-dissenters">
+    <p class="sec-eyebrow">§5</p>
+    <h2>The dissenters: who is against LLMs, and why</h2>
+    <div class="prose">
+      <p>"Against LLMs" here means something precise: these researchers accept that LLMs are useful products but argue
+      they are the wrong substrate for general intelligence — and each has a specific technical objection and a funded
+      alternative. What changed in 2025–26 is that this camp stopped writing essays and started raising billions.</p>
+    </div>
+
+    <div class="fig">
+      <p class="fig-title">The counter-bet, capitalized</p>
+      <p class="fig-sub">Disclosed funding of labs betting against (or beyond) pure LLM scaling · $B</p>
+      <div class="bars">
+        <div class="bar-row">
+          <span class="bar-label">SSI — Sutskever<span class="sub">half-dissent: new recipes, still deep learning</span></span>
+          <span class="bar-track"><span class="bar-fill hatch" style="width:86%;background:var(--c-hedge)"></span><span class="bar-val">$3.00B</span></span>
+        </div>
+        <div class="bar-row">
+          <span class="bar-label">AMI Labs — LeCun<span class="sub">JEPA world models</span></span>
+          <span class="bar-track"><span class="bar-fill" style="width:29.5%;background:var(--c-diss)"></span><span class="bar-val">$1.03B</span></span>
+        </div>
+        <div class="bar-row">
+          <span class="bar-label">World Labs — Li<span class="sub">spatial intelligence</span></span>
+          <span class="bar-track"><span class="bar-fill" style="width:28.7%;background:var(--c-diss)"></span><span class="bar-val">~$1.0B reported</span></span>
+        </div>
+        <div class="bar-row">
+          <span class="bar-label">Ndea — Chollet<span class="sub">program synthesis</span></span>
+          <span class="bar-track"><span class="bar-fill" style="width:1.2%;background:var(--c-diss)"></span><span class="bar-val">$0.04B</span></span>
+        </div>
+      </div>
+      <p class="fig-note">Verses AI (Friston, active inference) is publicly traded and omitted. The hatched bar marks
+      SSI's ambiguous position: not anti-LLM, but anti-"just add GPUs."</p>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr>
+          <th>Who</th><th>Vehicle &amp; backing</th><th>Core objection to LLMs</th><th>The alternative bet</th>
+        </tr></thead>
+        <tbody>
+          <tr>
+            <td class="who">Yann LeCun<span class="sub">ex-Meta chief AI scientist</span></td>
+            <td>AMI Labs, Paris — $1.03B seed at $3.5B pre-money, Europe's largest ever; backers include Bezos
+            Expeditions and Eric Schmidt</td>
+            <td>Autoregressive next-token prediction cannot plan, has no persistent memory, and no model of how the world
+            evolves. "Scaling them up will not allow us to reach AGI."</td>
+            <td>JEPA — joint-embedding predictive architectures that learn world dynamics from video and act by planning
+            in representation space, not in words.</td>
+          </tr>
+          <tr>
+            <td class="who">Fei-Fei Li<span class="sub">Stanford, ImageNet creator</span></td>
+            <td>World Labs, San Francisco — ~$1B raised (press-reported)</td>
+            <td>Language is a lossy, low-bandwidth compression of reality. Intelligence is grounded in 3D perception and
+            action; text-only systems inherit the blind spot.</td>
+            <td>Spatial intelligence: "large world models" that generate and reason over persistent, navigable 3D
+            environments (Marble).</td>
+          </tr>
+          <tr>
+            <td class="who">François Chollet<span class="sub">Keras &amp; ARC-AGI creator</span></td>
+            <td>Ndea — $43M (reported) with Zapier co-founder Mike Knoop</td>
+            <td>LLMs interpolate over memorized patterns and fail novel abstraction — which is why ARC-style tasks that
+            are trivial for humans stayed hard. Benchmark gains ≠ generality.</td>
+            <td>Program synthesis guided by deep learning: search over discrete programs, measuring intelligence as
+            skill-acquisition efficiency.</td>
+          </tr>
+          <tr>
+            <td class="who">Karl Friston<span class="sub">neuroscientist, UCL</span></td>
+            <td>Verses AI, Los Angeles — public company, Friston as chief scientist</td>
+            <td>LLMs are passive statistical mimicry: no agency, no intrinsic drive to resolve uncertainty, no generative
+            model of causes behind observations.</td>
+            <td>Active inference on the free-energy principle: Bayesian agents (Genius) that act on the world to minimize
+            uncertainty, with calibrated beliefs.</td>
+          </tr>
+          <tr>
+            <td class="who">Richard Sutton<span class="sub">RL pioneer, "Bitter Lesson" author</span></td>
+            <td>No lab — University of Alberta / Keen collaboration</td>
+            <td>The sharpest irony: the author of the pro-scaling "Bitter Lesson" argues LLMs learn from human imitation
+            rather than experience, and imitation caps out at human knowledge.</td>
+            <td>The "era of experience": agents that learn continually from their own interaction and reward, in the
+            classic RL sense.</td>
+          </tr>
+          <tr>
+            <td class="who">Gary Marcus<span class="sub">NYU emeritus, critic-at-large</span></td>
+            <td>No lab — books, testimony, and a widely read newsletter</td>
+            <td>Hallucination and brittle reasoning are structural properties of pure neural approaches, not bugs to be
+            scaled away; the field mistakes fluency for understanding.</td>
+            <td>Neurosymbolic hybrids — explicit knowledge and symbol manipulation fused with learning.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>The half-dissenters inside the citadel</h3>
+    <div class="prose">
+      <p><b>Demis Hassabis</b> runs the strongest LLM franchise on Earth and still argues language models lack physics,
+      causality, and spatial understanding — his position is convergence: LLMs <em>plus</em> world models <em>plus</em>
+      AlphaGo-style planning, not LLMs alone. <b>Ilya Sutskever</b> — arguably the person most responsible for the
+      scaling era — now says that era is over and that progress returns to algorithmic research; SSI is not anti-LLM so
+      much as anti-"just add GPUs." That the two most decorated researchers of the deep-learning age are both hedging the
+      pure-LLM thesis is, quietly, the strongest signal in this entire report.</p>
+      <p>Why does this camp exist at all, given LLMs' commercial success? Three recurring reasons: <b>(1) the
+      generalization critique</b> — models excel on distributions they were trained on and degrade on genuine novelty
+      (Chollet's ARC results); <b>(2) the grounding critique</b> — text is a shadow of the world, so systems trained only
+      on it can't acquire causal, spatial, physical understanding (LeCun, Li, Hassabis); and <b>(3) the learning-mechanism
+      critique</b> — imitating human output is not the same as learning from experience, and can't exceed its source
+      (Sutton, Friston). The scaling camp's rebuttal is empirical: every year the "wall" moves, agents keep absorbing
+      capabilities that critics said required new architectures, and revenue compounds. 2026 has not settled it.</p>
+    </div>
+  </section>
+
+  <!-- ============ §6 METHOD ============ -->
+  <section id="method" role="tabpanel" aria-labelledby="tab-method">
+    <p class="sec-eyebrow">§6</p>
+    <h2>Method, scope &amp; sources</h2>
+    <div class="prose">
+      <p>Compiled 13 July 2026 from public reporting, lab publications, and industry analysis, then fact-checked the
+      same day against primary and news sources (the corrections pass revised SSI's total raised from $6B to $3B,
+      updated Thinking Machines' valuation to reflect the collapsed $50B round, dated Cohere's North GA to August 2025,
+      and refreshed all model names and figures to their July 2026 state). "Top 20" was interpreted as the 22 most
+      consequential model-building labs across the US, UK/Europe, Canada, and China; hyperscaler-adjacent efforts that
+      primarily serve internal platforms (Amazon's Nova/AGI group, NVIDIA's Nemotron line) and smaller research shops
+      (AI21, Reka, Nous, Liquid AI, MiniMax) were noted but not profiled. Doctrine placements on the fault-line
+      spectrums are this report's editorial judgment, inferred from behavior — licensing, pricing, shipping cadence, and
+      leaders' own words — not from self-description.</p>
+    </div>
+    <div class="caveat">
+      Valuations, GPU counts, and model specifications are drawn from press reports and have not been independently
+      verified; figures marked "reported" (World Labs' total raise, Ndea's funding, Grok 5's specifications, the
+      Stargate target) rest on thinner sourcing than the rest. The landscape described here moves monthly — treat this
+      as a dated snapshot, not a standing reference.
+    </div>
+    <h3>Principal sources</h3>
+    <ul class="sources">
+      <li><a href="https://openai.com/index/gpt-5-6/">OpenAI — Introducing GPT-5.6</a></li>
+      <li><a href="https://www.axios.com/2026/07/09/ai-openai-gpt-release">Axios — OpenAI releases GPT-5.6 and ChatGPT Work</a></li>
+      <li><a href="https://www.cnbc.com/2026/07/08/openai-expanding-gpt-5point6-ai-model-release-ending-government-limits.html">CNBC — GPT-5.6 public release after government review</a></li>
+      <li><a href="https://www.anthropic.com/news/claude-opus-4-8">Anthropic — Introducing Claude Opus 4.8</a></li>
+      <li><a href="https://venturebeat.com/orchestration/claudes-next-enterprise-battle-is-not-models-its-the-agent-control-plane">VentureBeat — Claude and the agent control plane</a></li>
+      <li><a href="https://theairankings.com/google/gemini-3-5-pro/">The AI Rankings — Gemini 3.5 Pro: 2M context, Deep Think</a></li>
+      <li><a href="https://cryptobriefing.com/deepmind-hassabis-world-models-llm-limits/">Crypto Briefing — Hassabis: LLMs can't understand reality</a></li>
+      <li><a href="https://about.fb.com/news/2026/04/introducing-muse-spark-meta-superintelligence-labs/">Meta — Introducing Muse Spark</a></li>
+      <li><a href="https://futurism.com/artificial-intelligence/first-model-zuckerberg-superintelligence-labs-flops">Futurism — Muse Spark's benchmark showing</a></li>
+      <li><a href="https://www.marktechpost.com/2026/07/09/meta-superintelligence-labs-releases-muse-spark-1-1/">MarkTechPost — Muse Spark 1.1 and the Meta Model API</a></li>
+      <li><a href="https://www.cnbc.com/2026/06/14/meta-hired-alexandr-wang-to-build-ai-its-zuckerbergs-job-to-sell-it.html">CNBC — Meta, Wang, and Muse Spark</a></li>
+      <li><a href="https://en.wikipedia.org/wiki/SpaceXAI">Wikipedia — SpaceXAI (merger timeline)</a></li>
+      <li><a href="https://introl.com/blog/xai-colossus-2-gigawatt-expansion-555k-gpus-january-2026">Introl — Colossus at 555K GPUs / 2GW</a></li>
+      <li><a href="https://www.tomshardware.com/tech-industry/artificial-intelligence/musks-spacex-has-rented-out-access-to-its-supercomputers-220-000-nvidia-gpus-and-300-megawatts-of-ai-compute-power-to-rival-anthropic-musk-says-no-one-set-off-my-evil-detector-antrhropic-also-interested-in-orbital-data-centers">Tom's Hardware — SpaceX rents 220K GPUs to Anthropic</a></li>
+      <li><a href="https://www.geekwire.com/2026/microsoft-unveils-seven-homegrown-ai-models-in-bid-for-long-term-self-sufficiency/">GeekWire — Microsoft's seven MAI models</a></li>
+      <li><a href="https://techcrunch.com/2025/04/12/openai-co-founder-ilya-sutskevers-safe-superintelligence-reportedly-valued-at-32b/">TechCrunch — SSI at $32B</a></li>
+      <li><a href="https://www.hpcwire.com/aiwire/2026/01/27/the-thinking-machines-lab-saga-and-a-changing-ai-market/">AIwire — The Thinking Machines saga</a></li>
+      <li><a href="https://fortune.com/2026/01/16/mira-murati-thinking-machines-staff-defections-openai-zoph-metz-schoenholz/">Fortune — Thinking Machines defections</a></li>
+      <li><a href="https://techcrunch.com/2026/03/09/yann-lecuns-ami-labs-raises-1-03-billion-to-build-world-models/">TechCrunch — AMI Labs raises $1.03B</a></li>
+      <li><a href="https://news.crunchbase.com/venture/world-model-ai-lab-ami-raises-europes-largest-seed-round/">Crunchbase — Europe's largest seed round</a></li>
+      <li><a href="https://entropytown.com/articles/2025-11-13-world-model-lecun-feifei-li/">EntropyTown — LeCun vs Li vs DeepMind on world models</a></li>
+      <li><a href="https://techcrunch.com/2025/01/15/ai-researcher-francois-chollet-founds-a-new-ai-lab-focused-on-agi/">TechCrunch — Chollet founds Ndea</a></li>
+      <li><a href="https://openrouter.ai/blog/insights/the-open-weight-models-that-matter-june-2026/">OpenRouter — The open-weight models that matter, June 2026</a></li>
+      <li><a href="https://www.datagravity.dev/p/chinas-open-weight-takeover">Data Gravity — China's open-weight takeover</a></li>
+      <li><a href="https://www.cnbc.com/2026/04/24/deepseek-v4-llm-preview-open-source-ai-competition-china.html">CNBC — DeepSeek V4 preview</a></li>
+      <li><a href="https://fortune.com/2026/04/24/deepseek-v4-ai-model-price-performance-china-open-source/">Fortune — DeepSeek V4's rock-bottom pricing</a></li>
+      <li><a href="https://www.marktechpost.com/2026/04/20/moonshot-ai-releases-kimi-k2-6-with-long-horizon-coding-agent-swarm-scaling-to-300-sub-agents-and-4000-coordinated-steps/">MarkTechPost — Kimi K2.6 and Agent Swarm</a></li>
+      <li><a href="https://www.scmp.com/tech/tech-trends/article/3340866/baidu-launches-ernie-50-firms-ai-assistant-users-reach-200-million-month">SCMP — Baidu launches ERNIE 5.0</a></li>
+      <li><a href="https://kr-asia.com/bytedance-sets-four-ai-priorities-for-2026">KrASIA — ByteDance's four AI priorities</a></li>
+      <li><a href="https://techcrunch.com/2026/06/12/mistral-is-rumored-to-be-raising-e3b-at-e20-valuation/">TechCrunch — Mistral raising at €20B</a></li>
+      <li><a href="https://thenextweb.com/news/mistral-ai-830m-debt-data-centre-paris">TNW — Mistral's $830M data-center debt raise</a></li>
+      <li><a href="https://techcrunch.com/2026/02/13/coheres-240m-year-sets-stage-for-ipo/">TechCrunch — Cohere's $240M year</a></li>
+      <li><a href="https://allenai.org/blog/olmo3">Ai2 — Olmo 3 and the open model flow</a></li>
+      <li><a href="https://www.realcreativeagency.com/blog/verses-ai-genius-active-inference-vs-llms-and-ml/">RCA — Verses, Genius, and active inference vs LLMs</a></li>
+    </ul>
+  </section>
+
+  <footer>
+    Field briefing · Frontier AI labs · Compiled and fact-checked 13 July 2026 · Doctrine placements are editorial
+    judgment; figures are press-reported and directional.
+  </footer>
+</main>
+
+<script>
+(function () {
+  "use strict";
+
+  /* ---------- Theme toggle ---------- */
+  var root = document.documentElement;
+  var btn = document.getElementById("themeToggle");
+  var label = document.getElementById("themeLabel");
+
+  function systemTheme() {
+    return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+  }
+  function currentTheme() {
+    return root.getAttribute("data-theme") || systemTheme();
+  }
+  function paintButton() {
+    var cur = currentTheme();
+    label.textContent = cur === "dark" ? "Light mode" : "Dark mode";
+    btn.querySelector(".glyph").textContent = cur === "dark" ? "☀" : "☾";
+  }
+  try {
+    var stored = window.localStorage.getItem("labs-theme");
+    if (stored === "light" || stored === "dark") root.setAttribute("data-theme", stored);
+  } catch (e) { /* storage unavailable — fall back to system theme */ }
+  paintButton();
+  btn.addEventListener("click", function () {
+    var next = currentTheme() === "dark" ? "light" : "dark";
+    root.setAttribute("data-theme", next);
+    try { window.localStorage.setItem("labs-theme", next); } catch (e) { /* ignore */ }
+    paintButton();
+  });
+
+  /* ---------- Tabs ---------- */
+  var tabs = Array.prototype.slice.call(document.querySelectorAll(".tabs a[role=tab]"));
+  var panels = Array.prototype.slice.call(document.querySelectorAll("main > section[role=tabpanel]"));
+  var ids = panels.map(function (s) { return s.id; });
+  document.body.classList.add("tabbed");
+
+  function activate(id, scroll) {
+    if (ids.indexOf(id) === -1) id = ids[0];
+    panels.forEach(function (s) { s.classList.toggle("active", s.id === id); });
+    tabs.forEach(function (a) {
+      a.setAttribute("aria-selected", a.getAttribute("href") === "#" + id ? "true" : "false");
+    });
+    if (scroll) {
+      var bar = document.querySelector(".tabs");
+      var y = document.querySelector("main").getBoundingClientRect().top + window.pageYOffset - bar.offsetHeight - 8;
+      window.scrollTo({ top: Math.max(0, Math.min(window.pageYOffset, y)), behavior: "auto" });
+    }
+  }
+
+  window.addEventListener("hashchange", function () {
+    activate(location.hash.slice(1), true);
+  });
+  activate(location.hash.slice(1) || ids[0], false);
+})();
+</script>
+</body>
+</html>
