@@ -355,6 +355,29 @@
     font-size: 14px; color: var(--ink-2); margin: 22px 0; border-radius: 0 6px 6px 0;
   }
   footer { border-top: 1px solid var(--line); margin-top: 56px; padding: 26px 0 48px; font-size: 12.5px; color: var(--muted); }
+
+  /* ---------- Glossary terms ---------- */
+  dfn.term {
+    font-style: normal; cursor: help; position: relative;
+    border-bottom: 1px dotted var(--muted);
+  }
+  dfn.term:hover, dfn.term:focus-visible { border-bottom-color: var(--accent); color: var(--accent); }
+  dfn.term::after {
+    content: attr(data-def);
+    position: absolute; left: 0; bottom: calc(100% + 8px);
+    width: max-content; max-width: 280px;
+    background: var(--ink); color: var(--bg);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    font-size: 12.5px; line-height: 1.45; font-weight: 400; letter-spacing: normal;
+    padding: 8px 10px; border-radius: 6px; text-align: left;
+    opacity: 0; pointer-events: none; transform: translateY(4px);
+    transition: opacity 0.12s ease, transform 0.12s ease;
+    z-index: 5; box-shadow: 0 4px 14px rgba(0,0,0,0.18);
+  }
+  dfn.term:hover::after, dfn.term:focus-visible::after { opacity: 1; transform: translateY(0); }
+  @media (max-width: 560px) {
+    dfn.term::after { max-width: 220px; }
+  }
 </style>
 </head>
 <body>
@@ -428,7 +451,7 @@
         <h4>Dissent against LLMs is now capitalized at frontier scale</h4>
         <p>For the first time, "LLMs won't get there" is a funded position, not a blog post: Yann LeCun's AMI Labs raised
         a $1.03B seed at $3.5B pre-money (Europe's largest seed ever), Fei-Fei Li's World Labs holds a reported ~$1B for
-        spatial intelligence, and Chollet's Ndea and Friston's Verses round out the counter-bet — with Sutskever's $3B
+        <dfn class="term" tabindex="0" data-def="The ability to perceive and reason about 3D space and physical interaction — World Labs' bet that this, not language, is the foundation of intelligence.">spatial intelligence</dfn>, and Chollet's Ndea and Friston's Verses round out the counter-bet — with Sutskever's $3B
         SSI half-in as the "new recipes, still deep learning" hedge.</p>
       </div></div>
       <div class="finding"><span class="n">1.4</span><div>
@@ -452,7 +475,7 @@
       <div class="tl-scroll"><div class="tl">
         <div class="tl-col">
           <p class="tl-month">Dec 2025</p>
-          <div class="tl-ev ev-diss"><p><b>AMI Labs launches</b> in Paris — LeCun leaves Meta to build JEPA world models</p></div>
+          <div class="tl-ev ev-diss"><p><b>AMI Labs launches</b> in Paris — LeCun leaves Meta to build <dfn class="term" tabindex="0" data-def="Joint-Embedding Predictive Architecture — LeCun's alternative to next-word prediction: it predicts future states in an abstract representation space instead of in words.">JEPA</dfn> <dfn class="term" tabindex="0" data-def="A model that learns how the world evolves, so it can predict and plan — not just predict the next word in a sentence.">world models</dfn></p></div>
         </div>
         <div class="tl-col">
           <p class="tl-month">Jan 2026</p>
@@ -564,11 +587,11 @@
         <div class="card">
           <div class="card-top"><span class="name">Google DeepMind</span><span class="chip"><span class="swatch sw-hedge"></span>HEDGED</span></div>
           <p class="meta">LONDON / MOUNTAIN VIEW · GEMINI 3.5 PRO · ISOMORPHIC LABS</p>
-          <p class="flag"><b>Building:</b> Gemini everywhere, world models underneath, and a drug-discovery engine.</p>
+          <p class="flag"><b>Building:</b> Gemini everywhere, <dfn class="term" tabindex="0" data-def="A model that learns how the world evolves, so it can predict and plan — not just predict the next word in a sentence.">world models</dfn> underneath, and a drug-discovery engine.</p>
           <p>Gemini 3.5 Pro — announced at I/O on May 19, 2026, general availability July — carries a 2M-token context
           window (the largest of any production frontier model), a built-in Deep Think reasoning mode, and parallel tool
           orchestration, riding unmatched distribution across Search, Workspace, and 3B+ Android devices. Yet Hassabis
-          publicly argues LLMs "can't understand reality," pushing a convergence of LLMs, world models, and
+          publicly argues LLMs "can't understand reality," pushing a convergence of LLMs, <dfn class="term" tabindex="0" data-def="A model that learns how the world evolves, so it can predict and plan — not just predict the next word in a sentence.">world models</dfn>, and
           AlphaGo-style planning. Spinoff Isomorphic ($600M raised; Lilly, Novartis, J&amp;J deals) targets first
           clinical trials of AI-designed drugs by end-2026.</p>
         </div>
@@ -582,7 +605,7 @@
           users on Facebook, Instagram, WhatsApp, and Ray-Ban glasses, but a benchmark disappointment: fourth on the
           Artificial Analysis index behind GPT-5.4, Gemini 3.1 Pro, and Claude Opus 4.6 at launch. Muse Spark 1.1 and the
           Meta Model API (July 9) began monetizing it anyway; the thesis is that value accrues to data manufacturing and
-          distribution, not open weights.</p>
+          distribution, not <dfn class="term" tabindex="0" data-def="Model parameters released publicly so anyone can download, run, and modify the model — as opposed to a closed model reachable only through an API.">open weights</dfn>.</p>
         </div>
 
         <div class="card">
@@ -603,7 +626,7 @@
           <p class="flag"><b>Building:</b> full model self-sufficiency after the OpenAI renegotiation.</p>
           <p>Suleyman's MAI Superintelligence Team shipped seven in-house models at Build 2026 — MAI-Thinking-1
           (reasoning), MAI-Code-1-Flash (code), MAI-Image-2.5, MAI-Voice-2, MAI-Transcribe-1.5 and Flash variants —
-          trained from scratch with, Microsoft stresses, no distillation from anyone else's models. MAI-Thinking-1 claims
+          trained from scratch with, Microsoft stresses, no <dfn class="term" tabindex="0" data-def="Training a smaller model to reproduce a larger model's outputs, transferring much of its capability at a fraction of the cost.">distillation</dfn> from anyone else's models. MAI-Thinking-1 claims
           blind-test parity with Claude Sonnet 4.6 and a match with Opus 4.6 on a major coding benchmark. The frame:
           "long-term self-sufficiency" and a "humanist superintelligence" that complements rather than replaces people.</p>
         </div>
@@ -639,7 +662,7 @@
         <div class="card">
           <div class="card-top"><span class="name">World Labs</span><span class="chip"><span class="swatch sw-diss"></span>DISSENT</span></div>
           <p class="meta">SAN FRANCISCO · ~$1B RAISED (REPORTED) · MARBLE</p>
-          <p class="flag"><b>Building:</b> "large world models" — spatial intelligence instead of language.</p>
+          <p class="flag"><b>Building:</b> "large <dfn class="term" tabindex="0" data-def="A model that learns how the world evolves, so it can predict and plan — not just predict the next word in a sentence.">world models</dfn>" — <dfn class="term" tabindex="0" data-def="The ability to perceive and reason about 3D space and physical interaction — World Labs' bet that this, not language, is the foundation of intelligence.">spatial intelligence</dfn> instead of language.</p>
           <p>Fei-Fei Li's argument: language is a lossy, low-bandwidth encoding of reality, and intelligence requires
           reasoning about 3D space, objects, and physical interaction. World Labs generates persistent, navigable 3D
           environments with Marble — a direct architectural alternative to the text-token frontier.</p>
@@ -648,7 +671,7 @@
         <div class="card">
           <div class="card-top"><span class="name">Ndea</span><span class="chip"><span class="swatch sw-diss"></span>DISSENT</span></div>
           <p class="meta">SAN FRANCISCO · $43M (REPORTED) · ARC-AGI LINEAGE</p>
-          <p class="flag"><b>Building:</b> program synthesis guided by deep learning — abstraction over memorization.</p>
+          <p class="flag"><b>Building:</b> <dfn class="term" tabindex="0" data-def="Generating an executable program that fits given examples, rather than predicting text token by token — Chollet's proposed path to genuine abstraction.">program synthesis</dfn> guided by deep learning — abstraction over memorization.</p>
           <p>François Chollet (creator of Keras and the ARC-AGI benchmark) holds that LLMs interpolate over memorized
           patterns and fail at genuinely novel abstraction. Ndea's bet, with Zapier co-founder Mike Knoop, is that
           searching over programs — with neural networks as the guide — is the missing mechanism for general intelligence.</p>
@@ -667,9 +690,9 @@
           <div class="card-top"><span class="name">Verses AI</span><span class="chip"><span class="swatch sw-diss"></span>DISSENT</span></div>
           <p class="meta">LOS ANGELES · PUBLIC CO · GENIUS ENGINE</p>
           <p class="flag"><b>Building:</b> active-inference agents from neuroscience, not next-token prediction.</p>
-          <p>With Karl Friston as chief scientist, Verses builds Bayesian reasoning agents on the free-energy principle:
+          <p>With Karl Friston as chief scientist, Verses builds Bayesian reasoning agents on the <dfn class="term" tabindex="0" data-def="Karl Friston's theory that intelligent systems act to minimize the gap (‘free energy’) between their internal model of the world and what they actually observe.">free-energy principle</dfn>:
           intelligent systems act to minimize uncertainty about the world. The claim is that LLMs are passive mimicry,
-          while active inference yields agents that model causes, quantify what they don't know, and act accordingly.</p>
+          while <dfn class="term" tabindex="0" data-def="A theory from neuroscience: an agent acts to reduce its uncertainty about the environment, rather than simply predicting the next token.">active inference</dfn> yields agents that model causes, quantify what they don't know, and act accordingly.</p>
         </div>
       </div>
     </div>
@@ -681,7 +704,7 @@
         <div class="card">
           <div class="card-top"><span class="name">Mistral AI</span><span class="chip"><span class="swatch sw-comm"></span>COMMODITY</span></div>
           <p class="meta">PARIS · €11.7B → TALKS AT €20B · ARR $400M → $1B TARGET</p>
-          <p class="flag"><b>Building:</b> Europe's sovereign AI stack — open weights, on-prem agents, own data centers.</p>
+          <p class="flag"><b>Building:</b> Europe's sovereign AI stack — <dfn class="term" tabindex="0" data-def="Model parameters released publicly so anyone can download, run, and modify the model — as opposed to a closed model reachable only through an API.">open weights</dfn>, on-prem agents, own data centers.</p>
           <p>The flagship of European strategic autonomy: air-gapped, self-hosted deployments that sidestep US Cloud Act
           exposure, ARR that grew twentyfold to $400M by February 2026 (target: $1B by year-end), and a reported €3B
           raise in the works at a €20B valuation. Its compute is becoming sovereign too: an $830M debt-financed data
@@ -692,7 +715,7 @@
         <div class="card">
           <div class="card-top"><span class="name">AMI Labs</span><span class="chip"><span class="swatch sw-diss"></span>DISSENT</span></div>
           <p class="meta">PARIS · $1.03B SEED · $3.5B PRE — LARGEST EU SEED EVER</p>
-          <p class="flag"><b>Building:</b> JEPA world models — the largest single bet that LLMs are a dead end.</p>
+          <p class="flag"><b>Building:</b> <dfn class="term" tabindex="0" data-def="Joint-Embedding Predictive Architecture — LeCun's alternative to next-word prediction: it predicts future states in an abstract representation space instead of in words.">JEPA</dfn> <dfn class="term" tabindex="0" data-def="A model that learns how the world evolves, so it can predict and plan — not just predict the next word in a sentence.">world models</dfn> — the largest single bet that LLMs are a dead end.</p>
           <p>Yann LeCun left Meta after the Superintelligence Labs reorg and launched AMI in Paris in December 2025 with
           CEO Alexandre LeBrun; by March 2026 it held Europe's largest-ever seed round, backed by Bezos Expeditions,
           Eric Schmidt, Xavier Niel, and the Berners-Lees. The thesis he's argued for years: autoregressive token
@@ -704,11 +727,11 @@
         <div class="card">
           <div class="card-top"><span class="name">Cohere</span><span class="chip"><span class="swatch sw-comm"></span>COMMODITY</span></div>
           <p class="meta">TORONTO · ~$7B VALUATION · $240M ARR · IPO WATCH</p>
-          <p class="flag"><b>Building:</b> security-first enterprise agents, explicitly not chasing AGI.</p>
+          <p class="flag"><b>Building:</b> security-first enterprise agents, explicitly not chasing <dfn class="term" tabindex="0" data-def="Artificial General Intelligence — a system with human-level (or greater) ability across essentially any cognitive task, not just narrow ones.">AGI</dfn>.</p>
           <p>North — GA since August 2025, deployed by RBC, Dell, and LG CNS — runs agents inside a customer's own
           infrastructure, with a HiddenLayer partnership targeting prompt injection and data leakage. Cohere closed 2025
           at $240M ARR with &gt;50% quarter-over-quarter growth, hired Uber's IPO-era finance chief as CFO, and is the
-          clearest "AGI is not the business" position among Western labs — sovereignty and data control are. No S-1 has
+          clearest "<dfn class="term" tabindex="0" data-def="Artificial General Intelligence — a system with human-level (or greater) ability across essentially any cognitive task, not just narrow ones.">AGI</dfn> is not the business" position among Western labs — sovereignty and data control are. No S-1 has
           been filed as of mid-2026.</p>
         </div>
       </div>
@@ -743,7 +766,7 @@
           <div class="card-top"><span class="name">Moonshot AI (Kimi)</span><span class="chip"><span class="swatch sw-comm"></span>COMMODITY</span></div>
           <p class="meta">BEIJING · K2.6 / K2.7-CODE · 1T MOE, 32B ACTIVE · MODIFIED MIT</p>
           <p class="flag"><b>Building:</b> open agentic models tuned for long tool-use loops.</p>
-          <p>Kimi K2.6 (April 2026) is a 1T-parameter mixture-of-experts (32B active, 256K context) whose Agent Swarm
+          <p>Kimi K2.6 (April 2026) is a 1T-parameter <dfn class="term" tabindex="0" data-def="An architecture where only a subset of the model's parameters (‘experts’) activate for any given input, cutting compute cost versus an equivalently-sized dense model.">mixture-of-experts</dfn> (32B active, 256K context) whose Agent Swarm
           coordinates up to 300 domain-specialized sub-agents across 4,000 steps in one autonomous run; K2.7-Code
           followed in June, cutting reasoning-token use 30%. Five major releases in under a year — the open-weights
           answer to Western agentic flagships, at a cadence Western labs don't match.</p>
@@ -976,7 +999,7 @@
     <div class="ironies">
       <div class="irony">
         <h4>The open-source flip-flop</h4>
-        <p>Meta, the company that made open weights a movement, went proprietary with Muse Spark in the same twelve
+        <p>Meta, the company that made <dfn class="term" tabindex="0" data-def="Model parameters released publicly so anyone can download, run, and modify the model — as opposed to a closed model reachable only through an API.">open weights</dfn> a movement, went proprietary with Muse Spark in the same twelve
         months that Baidu — long a closed shop — released 100+ open models and Qwen overtook Llama as the world's
         most-downloaded open family. The largest reversals in the debate happened in opposite directions, for the same
         reason: each side concluded its old strategy wasn't winning.</p>
@@ -991,7 +1014,7 @@
       <div class="irony">
         <h4>The hedged champion</h4>
         <p>The CEO shipping the world's most-distributed LLM — Demis Hassabis, with Gemini on 3B+ devices — is also
-        the most senior voice arguing that language models "can't understand reality" and that world models are
+        the most senior voice arguing that language models "can't understand reality" and that <dfn class="term" tabindex="0" data-def="A model that learns how the world evolves, so it can predict and plan — not just predict the next word in a sentence.">world models</dfn> are
         required. DeepMind is simultaneously the strongest evidence for and against the scaling thesis.</p>
       </div>
     </div>
@@ -1016,7 +1039,7 @@
       <div class="agree-card">
         <h4>Post-training and reasoning are the active scaling axis</h4>
         <p>Naive pretraining scaling has quietly plateaued as a strategy everywhere; the gains of 2025–26 came from
-        reinforcement learning, verifier-guided reasoning, and test-time compute. Even Sutskever's "the age of scaling
+        <dfn class="term" tabindex="0" data-def="Training method where a model learns by trial and error against a reward signal, rather than by imitating labeled examples.">reinforcement learning</dfn>, verifier-guided reasoning, and <dfn class="term" tabindex="0" data-def="Spending extra computation while generating an answer — e.g. extended step-by-step reasoning — to improve quality, instead of investing compute only during training.">test-time compute</dfn>. Even Sutskever's "the age of scaling
         is over" is only a sharper version of what every lab's training pipeline already concedes.</p>
         <p class="who">Universal — including the scaling believers</p>
       </div>
@@ -1043,10 +1066,10 @@
         <p class="who">DeepMind · OpenAI · Anthropic · Meta · Microsoft</p>
       </div>
       <div class="agree-card">
-        <h4>Everyone hedges with world models</h4>
+        <h4>Everyone hedges with <dfn class="term" tabindex="0" data-def="A model that learns how the world evolves, so it can predict and plan — not just predict the next word in a sentence.">world models</dfn></h4>
         <p>The dissenters' core idea is being absorbed by the mainstream: DeepMind's world-model convergence,
-        video-generation-as-simulation efforts, ByteDance naming world models a 2026 priority, and embodied bets across
-        the frontier labs. The disagreement is no longer whether world models matter — it's whether they emerge from
+        video-generation-as-simulation efforts, ByteDance naming <dfn class="term" tabindex="0" data-def="A model that learns how the world evolves, so it can predict and plan — not just predict the next word in a sentence.">world models</dfn> a 2026 priority, and embodied bets across
+        the frontier labs. The disagreement is no longer whether <dfn class="term" tabindex="0" data-def="A model that learns how the world evolves, so it can predict and plan — not just predict the next word in a sentence.">world models</dfn> matter — it's whether they emerge from
         scaled LLMs or must replace them.</p>
         <p class="who">DeepMind · OpenAI · Meta · ByteDance · AMI · World Labs</p>
       </div>
@@ -1128,8 +1151,8 @@
             <td>AMI Labs, Paris — $1.03B seed at $3.5B pre-money, Europe's largest ever; backers include Bezos
             Expeditions and Eric Schmidt</td>
             <td>Autoregressive next-token prediction cannot plan, has no persistent memory, and no model of how the world
-            evolves. "Scaling them up will not allow us to reach AGI."</td>
-            <td>JEPA — joint-embedding predictive architectures that learn world dynamics from video and act by planning
+            evolves. "Scaling them up will not allow us to reach <dfn class="term" tabindex="0" data-def="Artificial General Intelligence — a system with human-level (or greater) ability across essentially any cognitive task, not just narrow ones.">AGI</dfn>."</td>
+            <td><dfn class="term" tabindex="0" data-def="Joint-Embedding Predictive Architecture — LeCun's alternative to next-word prediction: it predicts future states in an abstract representation space instead of in words.">JEPA</dfn> — joint-embedding predictive architectures that learn world dynamics from video and act by planning
             in representation space, not in words.</td>
           </tr>
           <tr>
@@ -1137,7 +1160,7 @@
             <td>World Labs, San Francisco — ~$1B raised (press-reported)</td>
             <td>Language is a lossy, low-bandwidth compression of reality. Intelligence is grounded in 3D perception and
             action; text-only systems inherit the blind spot.</td>
-            <td>Spatial intelligence: "large world models" that generate and reason over persistent, navigable 3D
+            <td>Spatial intelligence: "large <dfn class="term" tabindex="0" data-def="A model that learns how the world evolves, so it can predict and plan — not just predict the next word in a sentence.">world models</dfn>" that generate and reason over persistent, navigable 3D
             environments (Marble).</td>
           </tr>
           <tr>
@@ -1153,13 +1176,13 @@
             <td>Verses AI, Los Angeles — public company, Friston as chief scientist</td>
             <td>LLMs are passive statistical mimicry: no agency, no intrinsic drive to resolve uncertainty, no generative
             model of causes behind observations.</td>
-            <td>Active inference on the free-energy principle: Bayesian agents (Genius) that act on the world to minimize
+            <td>Active inference on the <dfn class="term" tabindex="0" data-def="Karl Friston's theory that intelligent systems act to minimize the gap (‘free energy’) between their internal model of the world and what they actually observe.">free-energy principle</dfn>: Bayesian agents (Genius) that act on the world to minimize
             uncertainty, with calibrated beliefs.</td>
           </tr>
           <tr>
             <td class="who">Richard Sutton<span class="sub">RL pioneer, "Bitter Lesson" author</span></td>
             <td>No lab — University of Alberta / Keen collaboration</td>
-            <td>The sharpest irony: the author of the pro-scaling "Bitter Lesson" argues LLMs learn from human imitation
+            <td>The sharpest irony: the author of the pro-scaling "<dfn class="term" tabindex="0" data-def="Richard Sutton's 2019 essay arguing that general methods which scale with more computation reliably beat approaches built on hand-engineered human knowledge.">Bitter Lesson</dfn>" argues LLMs learn from human imitation
             rather than experience, and imitation caps out at human knowledge.</td>
             <td>The "era of experience": agents that learn continually from their own interaction and reward, in the
             classic RL sense.</td>
@@ -1178,7 +1201,7 @@
     <h3>The half-dissenters inside the citadel</h3>
     <div class="prose">
       <p><b>Demis Hassabis</b> runs the strongest LLM franchise on Earth and still argues language models lack physics,
-      causality, and spatial understanding — his position is convergence: LLMs <em>plus</em> world models <em>plus</em>
+      causality, and spatial understanding — his position is convergence: LLMs <em>plus</em> <dfn class="term" tabindex="0" data-def="A model that learns how the world evolves, so it can predict and plan — not just predict the next word in a sentence.">world models</dfn> <em>plus</em>
       AlphaGo-style planning, not LLMs alone. <b>Ilya Sutskever</b> — arguably the person most responsible for the
       scaling era — now says that era is over and that progress returns to algorithmic research; SSI is not anti-LLM so
       much as anti-"just add GPUs." That the two most decorated researchers of the deep-learning age are both hedging the
