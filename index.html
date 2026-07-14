@@ -378,9 +378,27 @@
   @media (max-width: 560px) {
     dfn.term::after { max-width: 220px; }
   }
+  /* Suite bar — AI Intelligence · 2026 */
+  .suitebar { display: flex; align-items: center; gap: 14px; height: 40px; padding: 0 24px; background: var(--wash); border-bottom: 1px solid var(--line); font-family: ui-monospace, "SF Mono", "Cascadia Code", Menlo, Consolas, monospace; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; }
+  .suitebar a { text-decoration: none; }
+  .sb-brand { color: var(--accent); font-weight: 700; letter-spacing: 0.12em; }
+  .sb-date { color: var(--muted); }
+  .sb-tabs { margin-left: auto; display: flex; gap: 6px; }
+  .sb-tab { padding: 4px 10px; border-radius: 4px; border: 1px solid var(--line); color: var(--muted); transition: color .12s; }
+  .sb-tab:hover { color: var(--ink); }
+  .sb-tab.active { border-color: var(--accent); color: var(--accent); }
+  @media (max-width: 640px) { .suitebar { padding: 0 16px; } .sb-date { display: none; } }
 </style>
 </head>
 <body>
+<div class="suitebar">
+  <a class="sb-brand" href="https://vivekally.github.io/">AI Intelligence &middot; 2026</a>
+  <span class="sb-date">Refreshed Jul 13</span>
+  <div class="sb-tabs">
+    <a class="sb-tab" href="https://vivekally.github.io/ai-stack-report/">01 Stack Landscape</a>
+    <a class="sb-tab active" href="https://vivekally.github.io/ai-labs-briefing-2026/">02 Labs Briefing</a>
+  </div>
+</div>
 <header class="masthead">
   <div class="shell">
     <div class="mast-top">
